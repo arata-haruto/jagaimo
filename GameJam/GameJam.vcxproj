@@ -133,6 +133,8 @@
   <ItemGroup>
     <ClCompile Include="AppMain.cpp" />
     <ClCompile Include="SceneManager\InGame\InGame.cpp" />
+    <ClCompile Include="SceneManager\Ranking\RankingData.cpp" />
+    <ClCompile Include="SceneManager\Ranking\RankingScene.cpp" />
     <ClCompile Include="SceneManager\Result\Result.cpp" />
     <ClCompile Include="SceneManager\SceneManager.cpp" />
     <ClCompile Include="SceneManager\Title\Title.cpp" />
@@ -141,6 +143,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SceneManager\InGame\InGame.h" />
+    <ClInclude Include="SceneManager\Ranking\RankingData.h" />
+    <ClInclude Include="SceneManager\Ranking\RankingScene.h" />
     <ClInclude Include="SceneManager\Result\Result.h" />
     <ClInclude Include="SceneManager\SceneManager.h" />
     <ClInclude Include="SceneManager\SceneType.h" />
