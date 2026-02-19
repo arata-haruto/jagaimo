@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AppMain.cpp" />
+    <ClCompile Include="Nuts\Nuts.cpp" />
     <ClCompile Include="SceneManager\InGame\InGame.cpp" />
     <ClCompile Include="SceneManager\Result\Result.cpp" />
     <ClCompile Include="SceneManager\SceneManager.cpp" />
@@ -140,6 +141,7 @@
     <ClCompile Include="Utility\InputManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Nuts\Nuts.h" />
     <ClInclude Include="SceneManager\InGame\InGame.h" />
     <ClInclude Include="SceneManager\Result\Result.h" />
     <ClInclude Include="SceneManager\SceneManager.h" />
