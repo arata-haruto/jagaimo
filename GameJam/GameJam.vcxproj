@@ -132,6 +132,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AppMain.cpp" />
+    <ClCompile Include="SceneManager\InGame\InGame.cpp" />
+    <ClCompile Include="SceneManager\Result\Result.cpp" />
+    <ClCompile Include="SceneManager\SceneManager.cpp" />
+    <ClCompile Include="SceneManager\Title\Title.cpp" />
+    <ClCompile Include="System\System.cpp" />
+    <ClCompile Include="Utility\InputManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SceneManager\InGame\InGame.h" />
+    <ClInclude Include="SceneManager\Result\Result.h" />
+    <ClInclude Include="SceneManager\SceneManager.h" />
+    <ClInclude Include="SceneManager\SceneType.h" />
+    <ClInclude Include="SceneManager\Title\Title.h" />
+    <ClInclude Include="System\ProjectConfig.h" />
+    <ClInclude Include="System\System.h" />
+    <ClInclude Include="Utility\Geometry.h" />
+    <ClInclude Include="Utility\InputManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
