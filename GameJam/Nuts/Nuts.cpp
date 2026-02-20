@@ -19,8 +19,8 @@ int pos_Item_No;//アイテムナンバー
 void NutsInit(void)
 {
 	//画像読み込み
-	Nuts_image = LoadGraph("Images/Item/seed.jpg");
-	Nuts_image2 = LoadGraph("Images/Item/128.jpg");
+	Nuts_image = LoadGraph("Images/Item/seed.png");
+	Nuts_image2 = LoadGraph("Images/Item/128.png");
 	/////////////////////初期化//////////////////////////////////////
 	//pos_Item_No = 0;
 	//Nuts_Position_X[0] \=100;
@@ -31,7 +31,7 @@ void NutsInit(void)
 	for (pos_Item_No = 0; pos_Item_No < 10; pos_Item_No++)
 	{
 		pos_rand_X[pos_Item_No] = GetRand(2400);
-		pos_rand_Y[pos_Item_No] = GetRand(2400);
+		pos_rand_Y[pos_Item_No] = GetRand(2100);
 		Nuts_Position_X[pos_Item_No] = D_MAP_WIDTH - pos_rand_X[pos_Item_No];
 		Nuts_Position_Y[pos_Item_No] = D_MAP_WIDTH - pos_rand_Y[pos_Item_No];
 	}
@@ -62,7 +62,7 @@ void NutsDraw(float camera_x, float camera_y)//スクリーン座標の取得
 	//DrawRotaGraphF(Nuts_Position_X[1], Nuts_Position_Y[0], 0.07, 0, Nuts_image2, TRUE);
 
 	DrawFormatString(400, 4, GetColor(255, 255, 0),"X:%d  Y:%d ",Nuts_Position_X[0], Nuts_Position_Y[0]);
-	DrawFormatString(400, 18, GetColor(255, 255, 0),"X:%d  Y:%d ",Nuts_Position_X[1], Nuts_Position_Y[0]);
+	DrawFormatString(400, 18, GetColor(255, 255, 0),"X:%d  Y:%d ",Nuts_Position_X[1], Nuts_Position_Y[1]);
 }
 
 void NutsDestroy(void)

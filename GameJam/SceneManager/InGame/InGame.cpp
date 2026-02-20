@@ -4,6 +4,7 @@
 #include "ScoreManager.h"
 #include "../../Player/Player.h"
 #include "../../Camera/Camera.h"
+#include "../../Nuts/Nuts.h"
 #include "DxLib.h"
 
 static int prevTime = 0;
@@ -14,7 +15,8 @@ void InGameInit(void)
 	PlayerInit();
 	CameraInit();
 	ScoreReset();
-	TimerInit(5.0f);        // 制限時間60秒
+	NutsInit();
+	TimerInit(50.0f);        // 制限時間60秒
 	prevTime = GetNowCount(); // deltaTime
 }
 
@@ -27,6 +29,7 @@ eSceneType InGameUpdate(void)
 
 	PlayerUpdate();
 
+	Position2D GetNutsPosition();
 	Position2D pos = GetPlayerPosition();
 	CameraUpdate(pos.x, pos.y);
 
@@ -48,6 +51,7 @@ eSceneType InGameUpdate(void)
 void InGameDraw(void)
 {
 	PlayerDraw(CameraGetX(), CameraGetY());
+	NutsDraw(CameraGetX(), CameraGetY());
 	DrawString(200, 400, "スペースでリザルトへ", Cr2);
 	DrawString(200, 200, "インゲームシーン",Cr2);
 
