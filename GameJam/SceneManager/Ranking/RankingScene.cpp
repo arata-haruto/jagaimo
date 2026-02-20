@@ -43,7 +43,7 @@ eSceneType RankingUpdate(void)
 	{
 		return eTitle;
 	}
-	/*return eRanking;*/
+	return eRanking;
 }
 
 void RankingDraw(void)
@@ -58,6 +58,7 @@ void RankingDraw(void)
 		DrawFormatString(80, 170 + i * 30, GetColor(255, 255, 255), "%2d %10d",
 			data->num, data->score);
 	}
+	SetFontSize(20);
 
 	//点滅中は「A」ボタンで戻る案内を表示
 	/*if (ranking_blink_flag == TRUE)
