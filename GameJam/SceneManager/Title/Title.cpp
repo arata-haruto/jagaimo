@@ -6,14 +6,12 @@ int Cr = GetColor(255, 255, 255);
 int title_image;
 int cursor_number;
 int blink_flag;
-float blink_time;
 
 void TitleInit(void)
 {
 	cursor_number = 0;
 
-	blink_time = TRUE;
-	blink_time = 0.0f;
+	blink_flag = TRUE;
 }
 
 eSceneType TitleUpdate()
@@ -30,6 +28,10 @@ eSceneType TitleUpdate()
 	if (GetKeyInputState(KEY_INPUT_DOWN) == ePress || eStick == eDOWN)
 	{
 		cursor_number++;
+		if (cursor_number > 2)
+		{
+			cursor_number = 0;
+		}
 	}
 	//スペース押されたらインゲーム画面へ
 	if (GetKeyInputState(KEY_INPUT_SPACE) == eRelease)
@@ -59,5 +61,11 @@ void TitleDraw(void)
 	DrawString(200, 500, "ヘルプ", Cr);
 	DrawString(200, 550, "ランキング", Cr);
 	DrawString(200, 600, "ゲームを終わる", Cr);
+
+	if (blink_flag == TRUE)
+	{
+		int cy = cursor_number * 50;
+		DrawTriangle(180, 495 + cy, 190, 505 + cy, 180, 515 + cy, GetColor(255, 255, 255), TRUE);
+	}
 
 }
