@@ -16,30 +16,31 @@ void InGameInit(void)
 	CameraInit();
 	ScoreReset();
 	NutsInit();
-	TimerInit(50.0f);        // 制限時間60秒
+	TimerInit(10.0f);        // 制限時間
 	prevTime = GetNowCount(); // deltaTime
 }
 
 eSceneType InGameUpdate(void)
 {
-	// deltaTime）
+	// deltaTime
 	int nowTime = GetNowCount();
 	float deltaTime = (nowTime - prevTime) / 1000.0f;
 	prevTime = nowTime;
 
 	PlayerUpdate();
 
-	Position2D GetNutsPosition();
 	Position2D pos = GetPlayerPosition();
 	CameraUpdate(pos.x, pos.y);
 
-	if (GetKeyInputState(KEY_INPUT_Z) == ePress)
+	// プレイヤーと木の実の当たり判定（プレイヤー半径16px）
+	int collected = NutsCheckCollect(pos.x, pos.y, 16.0f);
+	if (collected > 0)
 	{
-		ScoreAdd(10);
+		ScoreAdd(collected * 10); // 1個+10点
 	}
 
 
-	// タイマー更新＆時間切れ判定
+	
 	TimerUpdate(deltaTime);
 	if (TimerIsTimeUp())
 	{
@@ -52,10 +53,10 @@ void InGameDraw(void)
 {
 	PlayerDraw(CameraGetX(), CameraGetY());
 	NutsDraw(CameraGetX(), CameraGetY());
-	DrawString(200, 400, "スペースでリザルトへ", Cr2);
-	DrawString(200, 200, "インゲームシーン",Cr2);
+	DrawString(200, 400, "スペースでリザルト", Cr2);
+	DrawString(200, 200, "インゲーム",Cr2);
 
-	// 残り時間を左上に表示
+	
 	char timeBuf[16];
 	sprintf_s(timeBuf, "Time: %d", TimerGetRemainingTime());
 	DrawString(10, 50, timeBuf, Cr2);
