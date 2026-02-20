@@ -16,7 +16,7 @@ void TitleInit(void)
 	blink_time = 0.0f;
 }
 
-eSceneType TitleUpdate(void)
+eSceneType TitleUpdate()
 {
 	if (GetKeyInputState(KEY_INPUT_UP) == ePress || eStick == eUP)
 	{

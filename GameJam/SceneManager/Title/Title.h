@@ -5,6 +5,6 @@
 void TitleInit(void);
 
 
-eSceneType TitleUpdate(void);
+eSceneType TitleUpdate();
 
 void TitleDraw(void);
