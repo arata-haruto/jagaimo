@@ -169,6 +169,14 @@
     <ClInclude Include="Utility\singleton.h" />
     <ClInclude Include="Utility\Vector2D.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="images\map\floor.png" />
+    <Image Include="images\map\floor_02.png" />
+    <Image Include="images\Player\りす横.png" />
+    <Image Include="images\Player\上1.png" />
+    <Image Include="images\Player\上2.png" />
+    <Image Include="images\Player\横2.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

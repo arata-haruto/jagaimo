@@ -16,7 +16,7 @@ void InGameInit(void)
 	CameraInit();
 	ScoreReset();
 	NutsInit();
-	TimerInit(10.0f);        // 制限時間
+	TimerInit(30.0f);        // 制限時間
 	prevTime = GetNowCount(); // deltaTime
 }
 
@@ -32,11 +32,11 @@ eSceneType InGameUpdate(void)
 	Position2D pos = GetPlayerPosition();
 	CameraUpdate(pos.x, pos.y);
 
-	// プレイヤーと木の実の当たり判定（プレイヤー半径16px）
+	//期のみに触れたらスコア加算
 	int collected = NutsCheckCollect(pos.x, pos.y, 16.0f);
 	if (collected > 0)
 	{
-		ScoreAdd(collected * 10); // 1個+10点
+		ScoreAdd(collected * 10); // 10点加算
 	}
 
 
@@ -51,10 +51,9 @@ eSceneType InGameUpdate(void)
 }
 void InGameDraw(void)
 {
-	PlayerDraw(CameraGetX(), CameraGetY());
+	MapDraw(CameraGetX(), CameraGetY());
 	NutsDraw(CameraGetX(), CameraGetY());
-	DrawString(200, 400, "スペースでリザルト", Cr2);
-	DrawString(200, 200, "インゲーム",Cr2);
+	PlayerDraw(CameraGetX(), CameraGetY());
 
 	
 	char timeBuf[16];

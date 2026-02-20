@@ -5,14 +5,20 @@
 #include "DxLib.h"
 #include <math.h>
 
-#define D_PLAYER_WIDTH  (32.0f)
-#define D_PLAYER_HEIGHT (32.0f)
+#define D_PLAYER_WIDTH  (128.0f)
+#define D_PLAYER_HEIGHT (128.0f)
 #define D_PLAYER_SPEED  (4.0f)
 #define D_ANIM_INTERVAL (10)
 
 static Position2D player_pos;
 static int is_moving;
 static int anim_frame;
+static int player_dir; // 0:右 1:左 2:上 3:下
+
+static int img_right[2];
+static int img_up[2];
+static int img_floor;
+static int img_floor2;
 
 class PlayerInputBridge
 {
@@ -61,6 +67,14 @@ void PlayerInit(void)
 	player_pos.y = D_MAP_HEIGHT / 2.0f;
 	is_moving = FALSE;
 	anim_frame = 0;
+	player_dir = 0;
+
+	img_right[0] = LoadGraph("Images/Player/りす横.png");
+	img_right[1] = LoadGraph("Images/Player/横2.png");
+	img_up[0] = LoadGraph("Images/Player/上1.png");
+	img_up[1] = LoadGraph("Images/Player/上2.png");
+	img_floor = LoadGraph("Images/map/floor.png");
+	img_floor2 = LoadGraph("Images/map/floor_02.png");
 }
 
 void PlayerUpdate(void)
@@ -115,6 +129,11 @@ void PlayerUpdate(void)
 
 	is_moving = (dx != 0.0f || dy != 0.0f) ? TRUE : FALSE;
 
+	if (dx > 0.0f) player_dir = 0;      // 右
+	else if (dx < 0.0f) player_dir = 1;  // 左
+	else if (dy < 0.0f) player_dir = 2;  // 上
+	else if (dy > 0.0f) player_dir = 3;  // 下
+
 	player_pos.x += dx * D_PLAYER_SPEED;
 	player_pos.y += dy * D_PLAYER_SPEED;
 
@@ -145,30 +164,65 @@ void PlayerUpdate(void)
 	}
 }
 
+void MapDraw(float camera_x, float camera_y)
+{
+	// マップタイル描画（floor.png / floor_02.png 64x64 を敷き詰め）
+	int tile_w = 64;
+	int tile_h = 64;
+	int start_tx = (int)(camera_x / tile_w);
+	int start_ty = (int)(camera_y / tile_h);
+	int end_tx = (int)((camera_x + D_WINDOW_SIZE_X) / tile_w);
+	int end_ty = (int)((camera_y + D_WINDOW_SIZE_Y) / tile_h);
+
+	for (int ty = start_ty; ty <= end_ty; ty++)
+	{
+		for (int tx = start_tx; tx <= end_tx; tx++)
+		{
+			int draw_x = (int)(tx * tile_w - camera_x);
+			int draw_y = (int)(ty * tile_h - camera_y);
+			unsigned int hash = (unsigned int)(tx * 7919 + ty * 104729);
+			int use_flower = ((hash % 10) < 3) ? TRUE : FALSE;
+			DrawGraph(draw_x, draw_y, use_flower ? img_floor2 : img_floor, FALSE);
+		}
+	}
+}
+
 void PlayerDraw(float camera_x, float camera_y)
 {
-	// scrolling grid
-	int grid = 96;
-	int ox = (int)fmodf(camera_x, (float)grid);
-	int oy = (int)fmodf(camera_y, (float)grid);
-	int grid_col = GetColor(50, 80, 50);
-	for (int x = -ox; x <= D_WINDOW_SIZE_X; x += grid)
-		DrawLine(x, 0, x, D_WINDOW_SIZE_Y, grid_col);
-	for (int y = -oy; y <= D_WINDOW_SIZE_Y; y += grid)
-		DrawLine(0, y, D_WINDOW_SIZE_X, y, grid_col);
+	// プレイヤー描画
+	int px = (int)(player_pos.x - camera_x);
+	int py = (int)(player_pos.y - camera_y);
 
-	// player
-	int draw_x = (int)(player_pos.x - camera_x);
-	int draw_y = (int)(player_pos.y - camera_y);
-	int half_w = (int)(D_PLAYER_WIDTH / 2.0f);
-	int half_h = (int)(D_PLAYER_HEIGHT / 2.0f);
-	int color = GetColor(255, 80, 80);
+	int anim_idx = (anim_frame / D_ANIM_INTERVAL) % 2;
+	int img;
+	int flip = FALSE;
 
-	DrawBox(draw_x - half_w, draw_y - half_h,
-		draw_x + half_w, draw_y + half_h, color, TRUE);
-	DrawBox(draw_x - half_w, draw_y - half_h,
-		draw_x + half_w, draw_y + half_h,
-		GetColor(255, 255, 255), FALSE);
+	switch (player_dir)
+	{
+	case 0: // 右
+		img = img_right[anim_idx];
+		flip = FALSE;
+		break;
+	case 1: // 左（右画像を反転）
+		img = img_right[anim_idx];
+		flip = TRUE;
+		break;
+	case 2: // 上
+		img = img_up[anim_idx];
+		flip = FALSE;
+		break;
+	case 3: // 下
+		img = img_up[anim_idx];
+		flip = TRUE;
+		break;
+	default:
+		img = img_right[0];
+		flip = FALSE;
+		break;
+	}
+
+	double scale = D_PLAYER_WIDTH / 128.0; // 64/128 = 0.5
+	DrawRotaGraphF((float)px, (float)py, scale, 0.0, img, TRUE, flip);
 
 	// world position debug
 	DrawFormatString(4, 4, GetColor(255, 255, 0),
