@@ -132,7 +132,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AppMain.cpp" />
+    <ClCompile Include="Camera\Camera.cpp" />
+    <ClCompile Include="Nuts\Nuts.cpp" />
+    <ClCompile Include="Player\Player.cpp" />
     <ClCompile Include="SceneManager\InGame\InGame.cpp" />
+    <ClCompile Include="SceneManager\Ranking\RankingData.cpp" />
+    <ClCompile Include="SceneManager\Ranking\RankingScene.cpp" />
     <ClCompile Include="SceneManager\Result\Result.cpp" />
     <ClCompile Include="SceneManager\SceneManager.cpp" />
     <ClCompile Include="SceneManager\Title\Title.cpp" />
@@ -140,7 +145,12 @@
     <ClCompile Include="Utility\InputManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera\Camera.h" />
+    <ClInclude Include="Nuts\Nuts.h" />
+    <ClInclude Include="Player\Player.h" />
     <ClInclude Include="SceneManager\InGame\InGame.h" />
+    <ClInclude Include="SceneManager\Ranking\RankingData.h" />
+    <ClInclude Include="SceneManager\Ranking\RankingScene.h" />
     <ClInclude Include="SceneManager\Result\Result.h" />
     <ClInclude Include="SceneManager\SceneManager.h" />
     <ClInclude Include="SceneManager\SceneType.h" />
