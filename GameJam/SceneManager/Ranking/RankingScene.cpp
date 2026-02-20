@@ -1,6 +1,7 @@
 #include"RankingScene.h"
 #include"RankingData.h"
 #include"../../Utility/InputManager.h"
+#include"../Result/Result.h"
 #include<DxLib.h>
 
 float ranking_blink_time;    //点滅タイマー
@@ -41,6 +42,7 @@ eSceneType RankingUpdate(void)
 	//Aボタンでタイトルへ戻る
 	if (GetControllerState(eButtonA) == ePress)
 	{
+		LoadRankData();
 		return eTitle;
 	}
 	return eRanking;
@@ -55,9 +57,12 @@ void RankingDraw(void)
 	for (int i = 0; i < D_RANK_DATA_MAX; i++)
 	{
 		const RankData* data = GetRankData(i);
-		DrawFormatString(80, 170 + i * 30, GetColor(255, 255, 255), "%2d %10d",
+		DrawFormatString(700, 100 + i * 60, GetColor(255, 255, 255), "%2d %10d",
 			data->num, data->score);
 	}
+	int now_score = GetScore();
+	DrawFormatString(0, 300, GetColor(255, 255, 255), "%10d", now_score);
+	DrawString(500, 600, "Aボタンでタイトルへ戻る", GetColor(255, 255, 255));
 	SetFontSize(20);
 
 	//点滅中は「A」ボタンで戻る案内を表示
