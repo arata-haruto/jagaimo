@@ -1,7 +1,7 @@
 #include "RankingData.h"
 #include  <DxLib.h>
 
-RankData ranking_data[D_RANK_DATA_MAX] = {1,100,2,200,3,300,4,400,5,500};
+RankData ranking_data[D_RANK_DATA_MAX] = {1,0,2,0,3,0,4,0,5,0};
 
 
 int LoadRankData(void)
@@ -39,6 +39,8 @@ void AddData(RankData new_data)
 {
 	const int tail = (D_RANK_DATA_MAX - 1);
 
+	LoadRankData();
+
 	//最下位よりスコアが大きいなら最後に追加し整列する
 	if (new_data.score > ranking_data[tail].score)
 	{
@@ -58,11 +60,11 @@ void SortRankData(void)
 	}
 
 	//スコア降順で交換
-	for (int i = 0; i < D_RANK_DATA_MAX - 1; i++)
+	for (int i = 0; i < D_RANK_DATA_MAX ; i++)
 	{
-		for (int j = i + 1; j < D_RANK_DATA_MAX; j++)
+		for (int j = i + 1; j <D_RANK_DATA_MAX; j++)
 		{
-			if (ranking_data[i].score <= ranking_data[j].score)
+			if (ranking_data[i].score < ranking_data[j].score)
 			{
 				tmp = ranking_data[i];
 				ranking_data[i] = ranking_data[j];
@@ -89,7 +91,7 @@ void SaveRankData()
 {
 	FILE* fp = NULL;
 	errno_t result = fopen_s(&fp, "SceneManager/Ranking/ranking_data.txt", "w");
-	if (result != 0);
+	if (result != 0)
 	{
 		return;
 	}

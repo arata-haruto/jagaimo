@@ -6,7 +6,6 @@
 //ランキングデータ構造体
 struct RankData
 {
-	/*char name[D_RANK_NAME_MAX];*/
 	int num;
 	int score;
 };
