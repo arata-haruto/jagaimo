@@ -43,7 +43,7 @@ eSceneType RankingUpdate(void)
 	{
 		return eTitle;
 	}
-	return eRanking;
+	/*return eRanking;*/
 }
 
 void RankingDraw(void)
