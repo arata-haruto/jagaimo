@@ -16,18 +16,20 @@ void TitleInit(void)
 
 eSceneType TitleUpdate()
 {
-	if (GetKeyInputState(KEY_INPUT_UP) == ePress || eStick == eUP)
+	if (GetKeyInputState(KEY_INPUT_UP) == ePress || GetControllerState(eStick) == eUP)
 	{
 		cursor_number--;
+		WaitTimer(200);
 		if (cursor_number < 0)
 		{
 			cursor_number = 2;
 		}
 	}
 
-	if (GetKeyInputState(KEY_INPUT_DOWN) == ePress || eStick == eDOWN)
+	if (GetKeyInputState(KEY_INPUT_DOWN) == ePress || GetControllerState(eStick) == eDOWN)
 	{
 		cursor_number++;
+		WaitTimer(200);
 		if (cursor_number > 2)
 		{
 			cursor_number = 0;
@@ -38,7 +40,7 @@ eSceneType TitleUpdate()
 	{
 		return eInGame;
 	}
-	if (GetKeyInputState(KEY_INPUT_Z) == ePress)
+	if (GetKeyInputState(KEY_INPUT_Z) == ePress|| GetControllerState(eButtonB)==ePress)
 	{
 		switch (cursor_number)
 		{

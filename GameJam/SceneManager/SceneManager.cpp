@@ -6,6 +6,7 @@
 #include "InGame/InGame.h"
 #include "Result/Result.h"
 #include"Ranking/RankingScene.h"
+#include"Help/Help.h"
 
 
 
@@ -49,6 +50,7 @@ void SceneManagerUpdate(void)
 	case eRanking:
 		next_scene_type = RankingUpdate();
 		break;
+	case eHelp:
 		break;
 	}
 	//ƒV[ƒ“‚Ì•`‰æ
@@ -84,6 +86,8 @@ void SceneManagerDraw(void)
 		break;
 	case eRanking:
 		RankingDraw();
+		break;
+	case eHelp:
 		break;
 		//‚»‚êˆÈŠO
 	default:
