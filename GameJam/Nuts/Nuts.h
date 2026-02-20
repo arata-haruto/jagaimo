@@ -14,3 +14,5 @@ void NutsDraw(float camera_x, float camera_y);
 //void NutsUpdate(void);
 void NutsDestroy(void);
 Position2D GetNutsPosition(void);
+
+int NutsCheckCollect(float player_x, float player_y, float player_radius);
