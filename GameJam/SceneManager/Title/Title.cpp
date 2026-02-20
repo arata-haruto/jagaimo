@@ -12,7 +12,8 @@ void TitleInit(void)
 {
 	cursor_number = 0;
 
-	
+	blink_time = TRUE;
+	blink_time = 0.0f;
 }
 
 eSceneType TitleUpdate(void)
@@ -55,5 +56,8 @@ void TitleDraw(void)
 	
 	DrawString(200, 200, "タイトル",Cr);
 	DrawString(200, 300, "スペースでインゲーム",Cr);
+	DrawString(200, 500, "ヘルプ", Cr);
+	DrawString(200, 550, "ランキング", Cr);
+	DrawString(200, 600, "ゲームを終わる", Cr);
 
 }
