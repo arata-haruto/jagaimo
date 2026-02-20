@@ -1,6 +1,7 @@
 #include "InGame.h"
 #include "Timer.h"
 #include "../../Utility/InputManager.h"
+#include "ScoreManager.h"
 #include "../../Player/Player.h"
 #include "../../Camera/Camera.h"
 #include "DxLib.h"
@@ -12,13 +13,14 @@ void InGameInit(void)
 {
 	PlayerInit();
 	CameraInit();
+	ScoreReset();
 	TimerInit(5.0f);        // 制限時間60秒
 	prevTime = GetNowCount(); // deltaTime
 }
 
 eSceneType InGameUpdate(void)
 {
-	// deltaTime 算出（ミリ秒→秒）
+	// deltaTime）
 	int nowTime = GetNowCount();
 	float deltaTime = (nowTime - prevTime) / 1000.0f;
 	prevTime = nowTime;
@@ -27,6 +29,12 @@ eSceneType InGameUpdate(void)
 
 	Position2D pos = GetPlayerPosition();
 	CameraUpdate(pos.x, pos.y);
+
+	if (GetKeyInputState(KEY_INPUT_Z) == ePress)
+	{
+		ScoreAdd(10);
+	}
+
 
 	// タイマー更新＆時間切れ判定
 	TimerUpdate(deltaTime);
@@ -47,4 +55,9 @@ void InGameDraw(void)
 	char timeBuf[16];
 	sprintf_s(timeBuf, "Time: %d", TimerGetRemainingTime());
 	DrawString(10, 50, timeBuf, Cr2);
+
+	char scoreBuf[32];
+	sprintf_s(scoreBuf, "Score: %d", ScoreGetTotal());
+	DrawString(10, 80, scoreBuf, Cr2);
+
 }

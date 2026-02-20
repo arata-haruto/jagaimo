@@ -1,4 +1,5 @@
 #include "Result.h"
+#include "../InGame/ScoreManager.h"
 #include "../../Utility/InputManager.h"
 #include "DxLib.h"
 
@@ -9,6 +10,7 @@ int flag;
 void ResultInit(void)
 {
 	score = 0;
+	score = ScoreGetTotal();
 	flag = 0;
 }
 
