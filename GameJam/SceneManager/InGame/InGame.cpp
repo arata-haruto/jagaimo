@@ -16,7 +16,7 @@ void InGameInit(void)
 	CameraInit();
 	ScoreReset();
 	NutsInit();
-	TimerInit(30.0f);        // 制限時間
+	TimerInit(30.0f);        //制限時間
 	prevTime = GetNowCount(); // deltaTime
 }
 
@@ -32,11 +32,11 @@ eSceneType InGameUpdate(void)
 	Position2D pos = GetPlayerPosition();
 	CameraUpdate(pos.x, pos.y);
 
-	//期のみに触れたらスコア加算
-	int collected = NutsCheckCollect(pos.x, pos.y, 16.0f);
-	if (collected > 0)
+	//触れたらスコア加算
+	int score = NutsCheckCollect(pos.x, pos.y, 16.0f);
+	if (score != 0)
 	{
-		ScoreAdd(collected * 10); // 10点加算
+		ScoreAdd(score); // 種類別スコア加算（腐りはマイナス）
 	}
 
 
