@@ -3,11 +3,12 @@
 #include "../Camera/Camera.h"
 #include "DxLib.h"
 #include <math.h>
+#include "../SceneManager/InGame/Timer.h"
 
 int Nuts_active[99];//木の実表示
-int Nuts_Position_X[99];//木の実座標
-int Nuts_Position_Y[99];
-int Nut_MAX_Pieces[99];//木の実最大個数
+int Nuts_Position_X[99];//木の実X座標
+int Nuts_Position_Y[99];//木の実Y座標
+int Nut_MAX_Pieces;//木の実最大個数
 
 int Nuts_image[8];//画像
 
@@ -19,6 +20,16 @@ float Appear_Time;//時間差で現れる
 bool Appear_Time_flag;//時間差で現れるフラグ
 int pos_Item_No;//アイテムナンバー
 int Image_rand[99];//アイテム画像ランダム出力番号
+//int Fresh_Pieces[99];//新鮮な実の個数
+bool Rot_Pieces[99];//腐の実の個数
+int Rot_Timer[99];//時間差で腐を消す
+int Rot_T;
+//int order;
+int sorting;
+int R_Pieces;
+int F_Pieces;
+
+
 void NutsInit(void)
 {
 	//画像読み込み
@@ -31,48 +42,97 @@ void NutsInit(void)
 	Nuts_image[6] = LoadGraph("Images/Item/walnut.png");
 	Nuts_image[7] = LoadGraph("Images/Item/walnut_rot.png");
 	/////////////////////初期化//////////////////////////////////////
-	
-	Nuts_active[0] = TRUE;//木の実表示
+	sorting = 0;
 	Appear_Time = 0;//時間差で現れる
-	Appear_Time_flag == FALSE;
+	Appear_Time_flag == FALSE;//時間差で現れるフラグ
+	R_Pieces=0;
+    F_Pieces=0;
+	Rot_T = 0;
 /////////////////////////////////ランダム配置////////////////////////////////////////
-	for (pos_Item_No = 0; pos_Item_No < 30; pos_Item_No++)//３０個配置
+	for (pos_Item_No = 0; pos_Item_No < 99; pos_Item_No++)//３０個配置
 	{
-		pos_rand_X[pos_Item_No] = GetRand(2400);//X軸ランダム設定
-		pos_rand_Y[pos_Item_No] = GetRand(2100);//Y軸ランダム設定
+		pos_rand_X[pos_Item_No] = GetRand(2200)+100;//X軸ランダム設定(最小値調整）
+		pos_rand_Y[pos_Item_No] = GetRand(1700)+100;//Y軸ランダム設定
 		Image_rand[pos_Item_No] = GetRand(8);//画像ランダム設定
 		Nuts_Position_X[pos_Item_No] = D_MAP_WIDTH - pos_rand_X[pos_Item_No];//ワールド内のX位置
 		Nuts_Position_Y[pos_Item_No] = D_MAP_WIDTH - pos_rand_Y[pos_Item_No];//ワールド内のY位置
 		Nuts_active[pos_Item_No] = TRUE;//表示
+		Nut_MAX_Pieces++;
+		//読み込んだ画像が腐なら(画像ランダム出力が奇数なら）
+		if (Image_rand[pos_Item_No] == 1 || Image_rand[pos_Item_No] == 3 || Image_rand[pos_Item_No] == 5 || Image_rand[pos_Item_No] == 7)
+		{
+			Rot_Pieces[pos_Item_No]=TRUE; //腐の個数を増やす
+			Rot_Timer[Rot_T]++;
+		}
+		else
+		{
+			
+			Rot_Pieces[pos_Item_No]=FALSE;//新の個数を増やす
+		}
+		
 	}
 }
 
 void NutsUpdate(void)
 {
-	//時間差で現れる
-	//Appear_Time = +0.001;
-	//if (Appear_Time == 10)
-	//{
-	//	Appear_Time_flag = TRUE;
-	//}
+	int time = TimerGetRemainingTime();
+	
 
+	switch (time)//木の実の数調整
+	{
+	case 5:////残5で70
+		Nut_MAX_Pieces = 70;
+		break;
+	case 10://残10で60
+		Nut_MAX_Pieces = 60;
+		break;
+	case 15://残15で50
+		Nut_MAX_Pieces = 50;
+		break;
+	case 20://残20で40
+		Nut_MAX_Pieces = 40;
+		break;
+	case 25://残25で30
+		Nut_MAX_Pieces = 30;
+		break;
+	case 30://最初20
+		Nut_MAX_Pieces = 20;
+		break;
+	default:
+		break;
+	}
+	for (sorting; sorting < Nut_MAX_Pieces; sorting++)
+	{
+		if (Rot_Pieces[sorting] == FALSE)
+		{
+			R_Pieces++;
+		}
+		else
+		{
+			F_Pieces++;
+		}
+	}
 }
 
 void NutsDraw(float camera_x, float camera_y)//スクリーン座標の取得
 {
-	for (pos_Item_No = 0; pos_Item_No < 30;pos_Item_No++)//３０個配置
+	int draw_x;
+	int draw_y;
+	for (pos_Item_No = 0; pos_Item_No < Nut_MAX_Pieces;pos_Item_No++)//4０個配置
 	{
-		int draw_x = (int)(Nuts_Position_X[pos_Item_No] - camera_x);//「ワールド座標」を「スクリーン座標」に変換
-		int draw_y = (int)(Nuts_Position_Y[pos_Item_No] - camera_y);
+		
+		 draw_x = (int)(Nuts_Position_X[pos_Item_No] - camera_x);//「ワールド座標」を「スクリーン座標」に変換
+		 draw_y = (int)(Nuts_Position_Y[pos_Item_No] - camera_y);
 
-		if (Nuts_active[pos_Item_No] == TRUE)//表示されるなら
-		{
-			DrawRotaGraphF(draw_x, draw_y, 0.5, 0, Nuts_image[Image_rand[pos_Item_No]], TRUE);
-		}
+		 if (Nuts_active[pos_Item_No] == TRUE)//表示されるなら
+		 {
+			 DrawRotaGraphF(draw_x, draw_y, 0.5, 0, Nuts_image[Image_rand[pos_Item_No]], TRUE);
+		 }
 	}
 
 	DrawFormatString(400, 4, GetColor(255, 255, 0),"X:%d  Y:%d ",Nuts_Position_X[0], Nuts_Position_Y[0]);//一つ目の位置
-	DrawFormatString(400, 18, GetColor(255, 255, 0),"X:%d  Y:%d ",Nuts_Position_X[1], Nuts_Position_Y[1]);//二つ目の位置
+	DrawFormatString(400, 18, GetColor(255, 255, 0),"R:%d F:%d", R_Pieces, F_Pieces);//二つ目の位置
+	DrawFormatString(400, 38, GetColor(255, 255, 0),"time:%f", Appear_Time);//二つ目の位置
 }
 
 void NutsDestroy(void)
@@ -102,7 +162,7 @@ static int GetNutsScore(int image_id)
 
 int NutsCheckCollect(float player_x, float player_y, float player_radius)
 {
-	for (pos_Item_No = 0; pos_Item_No < 30; pos_Item_No++)
+	for (pos_Item_No = 0; pos_Item_No < Nut_MAX_Pieces; pos_Item_No++)
 	{
 		if (Nuts_active[pos_Item_No] == TRUE)
 		{
@@ -112,6 +172,7 @@ int NutsCheckCollect(float player_x, float player_y, float player_radius)
 			if (distance < player_radius + 16.0f) // 木の実の半径16px
 			{
 				Nuts_active[pos_Item_No] = FALSE; // 木の実を消す
+			
 				return GetNutsScore(Image_rand[pos_Item_No]); // 種類別スコア
 			}
 		}
@@ -129,7 +190,9 @@ int NutsCheckCollect(float player_x, float player_y, float player_radius)
 
 
 
-
+//void OtherDraw() {
+//	int time = TimerGetRemainingTime();
+//}
 
 
 
