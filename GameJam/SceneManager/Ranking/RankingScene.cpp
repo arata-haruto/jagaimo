@@ -52,7 +52,7 @@ void RankingDraw(void)
 			}
 			else
 			{
-				DrawFormatString(200, 150 + i * 60, GetColor(255, 255, 255), "%2d %10d",
+				DrawFormatString(200, 100 + i * 60, GetColor(255, 255, 255), "%2d %10d",
 					deta->num, deta->score);
 			}
 		}

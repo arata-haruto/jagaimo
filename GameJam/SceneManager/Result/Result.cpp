@@ -18,19 +18,19 @@ void ResultInit(void)
 
 eSceneType ResultUpdate(void)
 {
-	if (now.score > 99)
+	if (now.score > 349)
 	{
 		flag = 1;
 	}
-	else if (now.score > 69 && now.score < 100)
+	else if (now.score > 199 && now.score < 350)
 	{
 		flag = 2;
 	}
-	else if (now.score > 34 && now.score < 70)
+	else if (now.score > 99 && now.score < 200)
 	{
 		flag = 3;
 	}
-	else if (now.score > 0 && now.score < 35)
+	else if (now.score > 0 && now.score < 100)
 	{
 		flag = 4;
 	}
@@ -51,8 +51,8 @@ eSceneType ResultUpdate(void)
 }
 void ResultDraw(void)
 {
-	DrawString(200, 200, "リザルト", Cr3);
-	DrawString(200, 400, "スペースでランキング", Cr3);
+	/*DrawString(200, 200, "リザルト", Cr3);
+	DrawString(200, 400, "スペースでランキング", Cr3);*/
 
 	DrawString(850, 200, "スコア", Cr3);
 	DrawFormatString(820, 250, Cr3, "%4d", now.score);
@@ -60,7 +60,7 @@ void ResultDraw(void)
 	switch (flag)
 	{
 	case 0:
-		DrawString(400, 500, "放置すんなよ", Cr3);
+		DrawString(400, 500, "そういう日もある", Cr3);
 		break;
 	case 1:
 		DrawString(400, 500, "なかなかやるやん", Cr3);
