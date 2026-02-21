@@ -7,6 +7,7 @@
 int Cr3 = GetColor(255, 255, 255);
 RankData now = {0,0};
 int flag;
+int rankflag = 0;
 
 void ResultInit(void)
 {
@@ -37,11 +38,7 @@ eSceneType ResultUpdate(void)
 	//スペース押されたらタイトル画面へ
 	if (GetKeyInputState(KEY_INPUT_SPACE) == eRelease)
 	{
-		AddData(now);
-		return eTitle;
-	}
-	if (GetKeyInputState(KEY_INPUT_Z) == eRelease)
-	{
+		rankflag = 1;
 		AddData(now);
 		return eRanking;
 	}
@@ -55,8 +52,7 @@ eSceneType ResultUpdate(void)
 void ResultDraw(void)
 {
 	DrawString(200, 200, "リザルト", Cr3);
-	DrawString(200, 400, "スペースでタイトル", Cr3);
-	DrawString(200, 600, "Zキーでランキング", Cr3);
+	DrawString(200, 400, "スペースでランキング", Cr3);
 
 	DrawString(850, 200, "スコア", Cr3);
 	DrawFormatString(820, 250, Cr3, "%4d", now.score);
@@ -84,4 +80,14 @@ void ResultDraw(void)
 int GetScore(void)
 {
 	return now.score;
+}
+
+int GetFlag(void)
+{
+	return rankflag;
+}
+
+void InitFlag(void)
+{
+	rankflag = 0;
 }

@@ -1,5 +1,6 @@
 #include "Title.h"
 #include "../../Utility/InputManager.h"
+#include "../Result/Result.h"
 #include "Dxlib.h"
 
 int Cr = GetColor(255, 255, 255);
@@ -10,6 +11,7 @@ int blink_flag;
 void TitleInit(void)
 {
 	cursor_number = 0;
+	InitFlag();
 
 	blink_flag = TRUE;
 }
