@@ -167,7 +167,6 @@ void PlayerUpdate(void)
 	else if (len > 0.0f && len < 1.0f)
 	{
 		// スティックの傾き具合を速度に反映（軽く倒すと遅く）
-		// ただしキーボードは常に1.0なのでそのまま
 	}
 
 	is_moving = (len > 0.001f) ? TRUE : FALSE;
@@ -299,4 +298,9 @@ void PlayerDraw(float camera_x, float camera_y)
 Position2D GetPlayerPosition(void)
 {
 	return player_pos;
+}
+
+float GetPlayerRadius(void)
+{
+	return D_PLAYER_WIDTH / 2.0f * 0.8f; // 当たり判定は少し小さめ
 }
