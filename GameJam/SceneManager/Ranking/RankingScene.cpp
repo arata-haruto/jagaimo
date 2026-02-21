@@ -4,9 +4,7 @@
 #include"../Result/Result.h"
 #include<DxLib.h>
 
-float ranking_blink_time;    //点滅タイマー
-int ranking_blink_flag;      //点滅ON/OFFフラグ
-int ranking_cursor;          //カーソル画像ハンドル
+int Rankingflag;
 
 int RankingInit(void)
 {
@@ -16,33 +14,17 @@ int RankingInit(void)
 		return FALSE;
 	}
 
-	//カーソル画像読み込み
-	/*ranking_cursor = LoadGraph("assets/");
-	if (ranking_cursor == -1)
-	{
-		return FALSE;
-	}*/
+	Rankingflag = GetFlag();
 
-	//点滅状態初期化
-	/*ranking_blink_time = 0.0f;
-	ranking_blink_flag = TRUE;*/
 	return TRUE;
 }
 
 eSceneType RankingUpdate(void)
 {
-	//0.5秒ごとに点滅
-	/*ranking_blink_time += delta_second;
-	if (ranking_blink_time >= 0.0f)
-	{
-		ranking_blink_time = 0.0f;
-		ranking_blink_flag = ranking_blink_flag ^ TRUE;
-	}*/
 
 	//Aボタンでタイトルへ戻る
 	if (GetControllerState(eButtonA) == ePress)
 	{
-		LoadRankData();
 		return eTitle;
 	}
 	return eRanking;
@@ -50,26 +32,52 @@ eSceneType RankingUpdate(void)
 
 void RankingDraw(void)
 {
+	
 	SaveRankData();
 	//タイトルランキング一覧を描画
-	SetFontSize(30);
+	SetFontSize(50);
 	DrawString(0, 10, "ランキング画面", GetColor(255, 255, 255));
-	for (int i = 0; i < D_RANK_DATA_MAX; i++)
-	{
-		const RankData* data = GetRankData(i);
-		DrawFormatString(700, 100 + i * 60, GetColor(255, 255, 255), "%2d %10d",
-			data->num, data->score);
-	}
 	int now_score = GetScore();
-	DrawFormatString(0, 300, GetColor(255, 255, 255), "%10d", now_score);
-	DrawString(500, 600, "Aボタンでタイトルへ戻る", GetColor(255, 255, 255));
-	SetFontSize(20);
-
-	//点滅中は「A」ボタンで戻る案内を表示
-	/*if (ranking_blink_flag == TRUE)
+	
+	switch (Rankingflag)
 	{
-		DrawRotaGraph(500, 450, 1.0, 0.0, ranking_cursor, TRUE);
-		SetFontSize(25);
-		DrawString(530, 440, ":Title", GetColor(255, 0, 0));
-	}*/
+	case 0:
+		for (int i = 0; i < D_RANK_DATA_MAX; i++)
+		{
+			const RankData* deta = GetRankData(i);
+			if (now_score == deta->score)
+			{
+				DrawFormatString(200, 100 + i * 60, GetColor(255, 255, 0), "%2d %10d",
+					deta->num, deta->score);
+			}
+			else
+			{
+				DrawFormatString(200, 150 + i * 60, GetColor(255, 255, 255), "%2d %10d",
+					deta->num, deta->score);
+			}
+		}
+		DrawString(350, 600, "Aボタンでタイトルへ戻る", GetColor(255, 255, 255));
+		break;
+	case 1:
+		for (int i = 0; i < D_RANK_DATA_MAX; i++)
+		{
+			const RankData* deta = GetRankData(i);
+			if (now_score == deta->score)
+			{
+				DrawFormatString(500, 100 + i * 60, GetColor(255, 255, 0), "%2d %10d",
+					deta->num, deta->score);
+			}
+			else
+			{
+				DrawFormatString(500, 100 + i * 60, GetColor(255, 255, 255), "%2d %10d",
+					deta->num, deta->score);
+			}
+		}
+		DrawFormatString(0, 300, GetColor(255, 255, 255), "%10d", now_score);
+		DrawString(350, 600, "Aボタンでタイトルへ戻る", GetColor(255, 255, 255));
+		
+		break;
+	}
+
+	SetFontSize(20);
 }

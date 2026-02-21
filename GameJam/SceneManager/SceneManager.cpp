@@ -51,6 +51,7 @@ void SceneManagerUpdate(void)
 		next_scene_type = RankingUpdate();
 		break;
 	case eHelp:
+		next_scene_type = HelpUpdate();
 		break;
 	}
 	//ƒV[ƒ“‚Ì•`‰æ
@@ -88,6 +89,7 @@ void SceneManagerDraw(void)
 		RankingDraw();
 		break;
 	case eHelp:
+		HelpDraw();
 		break;
 		//‚»‚êˆÈŠO
 	default:

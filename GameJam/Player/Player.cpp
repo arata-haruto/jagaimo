@@ -10,15 +10,22 @@
 #define D_PLAYER_SPEED  (4.0f)
 #define D_ANIM_INTERVAL (10)
 
+// 8方向: 0=右 1=右上 2=上 3=左上 4=左 5=左下 6=下 7=右下
 static Position2D player_pos;
 static int is_moving;
 static int anim_frame;
-static int player_dir; // 0:右 1:左 2:上 3:下
+static int player_dir;
 
-static int img_right[2];
-static int img_up[2];
+static int img_right[2];     // 右
+static int img_up[2];        // 上
+static int img_down[2];      // 下
+static int img_upper_left[2]; // 左上
+static int img_lower_left[2]; // 左下
 static int img_floor;
 static int img_floor2;
+
+#define D_STICK_DEADZONE (0.2f)
+#define D_STICK_MAX (32767.0f)
 
 class PlayerInputBridge
 {
@@ -54,6 +61,16 @@ public:
 		return eNone;
 	}
 
+	// 左スティックの値を -1.0?1.0 で返す
+	float GetStickX(void) const
+	{
+		return (float)now_pad.ThumbLX / D_STICK_MAX;
+	}
+	float GetStickY(void) const
+	{
+		return (float)now_pad.ThumbLY / D_STICK_MAX;
+	}
+
 private:
 	XINPUT_STATE now_pad = {};
 	XINPUT_STATE old_pad = {};
@@ -73,6 +90,12 @@ void PlayerInit(void)
 	img_right[1] = LoadGraph("Images/Player/横2.png");
 	img_up[0] = LoadGraph("Images/Player/上1.png");
 	img_up[1] = LoadGraph("Images/Player/上2.png");
+	img_down[0] = LoadGraph("Images/Player/下1.png");
+	img_down[1] = LoadGraph("Images/Player/下2.png");
+	img_upper_left[0] = LoadGraph("Images/Player/左上1.png");
+	img_upper_left[1] = LoadGraph("Images/Player/左上2.png");
+	img_lower_left[0] = LoadGraph("Images/Player/左下1.png");
+	img_lower_left[1] = LoadGraph("Images/Player/左下2.png");
 	img_floor = LoadGraph("Images/map/floor.png");
 	img_floor2 = LoadGraph("Images/map/floor_02.png");
 }
@@ -88,6 +111,7 @@ void PlayerUpdate(void)
 
 	input->Update();
 
+	// キーボード＋D-Pad入力
 	if (input->GetKeyState(KEY_INPUT_RIGHT) == ePress ||
 		input->GetKeyState(KEY_INPUT_RIGHT) == eHold ||
 		input->GetButtonState(XINPUT_BUTTON_DPAD_RIGHT) == ePress ||
@@ -120,19 +144,46 @@ void PlayerUpdate(void)
 		dy += 1.0f;
 	}
 
-	if (dx != 0.0f && dy != 0.0f)
+	// スティック入力（キーボード入力がなければスティックを使う）
+	if (dx == 0.0f && dy == 0.0f)
 	{
-		len = sqrtf(dx * dx + dy * dy);
+		float sx = input->GetStickX();
+		float sy = -input->GetStickY(); // Y軸反転（スティック上が正、画面上が負）
+		if (sx > D_STICK_DEADZONE || sx < -D_STICK_DEADZONE ||
+			sy > D_STICK_DEADZONE || sy < -D_STICK_DEADZONE)
+		{
+			dx = sx;
+			dy = sy;
+		}
+	}
+
+	// 正規化（斜めでも同じ速度になるように）
+	len = sqrtf(dx * dx + dy * dy);
+	if (len > 1.0f)
+	{
 		dx /= len;
 		dy /= len;
 	}
+	else if (len > 0.0f && len < 1.0f)
+	{
+		// スティックの傾き具合を速度に反映（軽く倒すと遅く）
+		// ただしキーボードは常に1.0なのでそのまま
+	}
 
-	is_moving = (dx != 0.0f || dy != 0.0f) ? TRUE : FALSE;
+	is_moving = (len > 0.001f) ? TRUE : FALSE;
 
-	if (dx > 0.0f) player_dir = 0;      // 右
-	else if (dx < 0.0f) player_dir = 1;  // 左
-	else if (dy < 0.0f) player_dir = 2;  // 上
-	else if (dy > 0.0f) player_dir = 3;  // 下
+	// 8方向の判定
+	if (is_moving == TRUE)
+	{
+		if (dx > 0.4f && dy < -0.4f)       player_dir = 1; // 右上
+		else if (dx < -0.4f && dy < -0.4f)  player_dir = 3; // 左上
+		else if (dx < -0.4f && dy > 0.4f)   player_dir = 5; // 左下
+		else if (dx > 0.4f && dy > 0.4f)    player_dir = 7; // 右下
+		else if (dx > 0.4f)                  player_dir = 0; // 右
+		else if (dx < -0.4f)                 player_dir = 4; // 左
+		else if (dy < -0.4f)                 player_dir = 2; // 上
+		else if (dy > 0.4f)                  player_dir = 6; // 下
+	}
 
 	player_pos.x += dx * D_PLAYER_SPEED;
 	player_pos.y += dy * D_PLAYER_SPEED;
@@ -166,7 +217,6 @@ void PlayerUpdate(void)
 
 void MapDraw(float camera_x, float camera_y)
 {
-	// マップタイル描画（floor.png / floor_02.png 64x64 を敷き詰め）
 	int tile_w = 64;
 	int tile_h = 64;
 	int start_tx = (int)(camera_x / tile_w);
@@ -203,16 +253,32 @@ void PlayerDraw(float camera_x, float camera_y)
 		img = img_right[anim_idx];
 		flip = FALSE;
 		break;
-	case 1: // 左（右画像を反転）
-		img = img_right[anim_idx];
+	case 1: // 右上（左上画像を反転）
+		img = img_upper_left[anim_idx];
 		flip = TRUE;
 		break;
 	case 2: // 上
 		img = img_up[anim_idx];
 		flip = FALSE;
 		break;
-	case 3: // 下
-		img = img_up[anim_idx];
+	case 3: // 左上
+		img = img_upper_left[anim_idx];
+		flip = FALSE;
+		break;
+	case 4: // 左（右画像を反転）
+		img = img_right[anim_idx];
+		flip = TRUE;
+		break;
+	case 5: // 左下
+		img = img_lower_left[anim_idx];
+		flip = FALSE;
+		break;
+	case 6: // 下
+		img = img_down[anim_idx];
+		flip = FALSE;
+		break;
+	case 7: // 右下（左下画像を反転）
+		img = img_lower_left[anim_idx];
 		flip = TRUE;
 		break;
 	default:
@@ -221,7 +287,7 @@ void PlayerDraw(float camera_x, float camera_y)
 		break;
 	}
 
-	double scale = D_PLAYER_WIDTH / 128.0; // 64/128 = 0.5
+	double scale = D_PLAYER_WIDTH / 128.0;
 	DrawRotaGraphF((float)px, (float)py, scale, 0.0, img, TRUE, flip);
 
 	// world position debug
