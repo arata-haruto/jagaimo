@@ -5,10 +5,6 @@
 
 int C = GetColor(255, 255, 255);
 
-void HelpInit(void)
-{
-
-}
 
 eSceneType HelpUpdate(void)
 {
