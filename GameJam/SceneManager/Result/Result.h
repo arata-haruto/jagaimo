@@ -10,3 +10,7 @@ eSceneType ResultUpdate(void);
 void ResultDraw(void);
 
 int GetScore(void);
+
+int GetFlag(void);
+
+void InitFlag(void);
