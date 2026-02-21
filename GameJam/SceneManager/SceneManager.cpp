@@ -140,9 +140,6 @@ void SceneInit(eSceneType new_scene_type)
 	case eRanking:
 		RankingInit();
 		break;
-	case eHelp:
-		HelpInit();
-		break;
 	default:
 		break;
 
