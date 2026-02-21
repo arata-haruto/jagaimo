@@ -28,7 +28,7 @@ eSceneType InGameUpdate(void)
 	prevTime = nowTime;
 
 	PlayerUpdate();
-
+	NutsUpdate();
 	Position2D pos = GetPlayerPosition();
 	CameraUpdate(pos.x, pos.y);
 
