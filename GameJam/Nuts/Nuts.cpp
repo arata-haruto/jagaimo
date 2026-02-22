@@ -28,10 +28,11 @@ int Rot_T;
 int sorting;
 int R_Pieces;
 int F_Pieces;
-
+float Nuts_Scale[999];//Nut_MAX_Pieces
 
 void NutsInit(void)
 {
+	
 	//画像読み込み
 	Nuts_image[0] = LoadGraph("Images/Item/seed.png");
 	Nuts_image[1] = LoadGraph("Images/Item/seed_rot.png");
@@ -51,8 +52,8 @@ void NutsInit(void)
 /////////////////////////////////ランダム配置////////////////////////////////////////
 	for (pos_Item_No = 0; pos_Item_No < 999; pos_Item_No++)//３０個配置
 	{
-		pos_rand_X[pos_Item_No] = GetRand(2200)+300;//X軸ランダム設定(最小値調整）
-		pos_rand_Y[pos_Item_No] = GetRand(1500)+300;//Y軸ランダム設定
+		pos_rand_X[pos_Item_No] = GetRand(2200);//X軸ランダム設定(最小値調整）
+		pos_rand_Y[pos_Item_No] = GetRand(1500+1500);//Y軸ランダム設定
 		Image_rand[pos_Item_No] = GetRand(8);//画像ランダム設定
 		Nuts_Position_X[pos_Item_No] = D_MAP_WIDTH - pos_rand_X[pos_Item_No];//ワールド内のX位置
 		Nuts_Position_Y[pos_Item_No] = D_MAP_WIDTH - pos_rand_Y[pos_Item_No];//ワールド内のY位置
@@ -71,6 +72,7 @@ void NutsInit(void)
 		}
 		
 	}
+
 }
 
 void NutsUpdate(void)
@@ -81,19 +83,19 @@ void NutsUpdate(void)
 	switch (time)//木の実の数調整
 	{
 	case 5:////残5で70
-		Nut_MAX_Pieces = 240;
+		Nut_MAX_Pieces = 999;
 		break;
 	case 10://残10で60
-		Nut_MAX_Pieces = 220;
+		Nut_MAX_Pieces = 500;
 		break;
 	case 15://残15で50
-		Nut_MAX_Pieces = 200;
+		Nut_MAX_Pieces = 400;
 		break;
 	case 20://残20で40
-		Nut_MAX_Pieces = 180;
+		Nut_MAX_Pieces = 300;
 		break;
 	case 25://残25で30
-		Nut_MAX_Pieces = 160;
+		Nut_MAX_Pieces = 200;
 		break;
 	case 30://最初20
 		Nut_MAX_Pieces = 140;
@@ -101,15 +103,15 @@ void NutsUpdate(void)
 	default:
 		break;
 	}
-	if (time == 11 || time == 21)
-	{
-		for(int d=0;d< Nut_MAX_Pieces;d++)
-		if (Rot_Pieces[d] == TRUE)
-		{
-			Nuts_active[d] = FALSE;//消す
-		}
-	}
-	for (sorting; sorting < Nut_MAX_Pieces; sorting++)
+	//if (time == 11 || time == 21)
+	//{
+	//	for(int d=0;d< Nut_MAX_Pieces;d++)
+	//	if (Rot_Pieces[d] == TRUE)
+	//	{
+	//		Nuts_active[d] = FALSE;//消す
+	//	}
+	//}
+	for (sorting; sorting < Nut_MAX_Pieces; sorting++)//仕分け
 	{
 		if (Rot_Pieces[sorting] == FALSE)
 		{
@@ -118,6 +120,23 @@ void NutsUpdate(void)
 		else
 		{
 			F_Pieces++;
+		}
+	}
+	for (int i = 0; i < Nut_MAX_Pieces; i++)//拡大
+	{
+		if (Nuts_active[i] == TRUE)
+		{
+			// まだ目標の0.5より小さければ、大きくする
+			if (Nuts_Scale[i] < 0.5f)
+			{
+				Nuts_Scale[i] += 0.02f; // 1フレームごとに0.05ずつ大きくなる（速度はお好みで調整）
+
+				// 0.5を超えないようにピタッと止める
+				if (Nuts_Scale[i] > 0.5f)
+				{
+					Nuts_Scale[i] = 0.5f;
+				}
+			}
 		}
 	}
 }
@@ -139,7 +158,7 @@ void NutsDraw(float camera_x, float camera_y)//スクリーン座標の取得
 
 		 if (Nuts_active[pos_Item_No] == TRUE)//表示されるなら
 		 {
-			 DrawRotaGraphF(draw_x, draw_y, 0.5, 0, Nuts_image[Image_rand[pos_Item_No]], TRUE);
+			 DrawRotaGraphF(draw_x, draw_y, Nuts_Scale[pos_Item_No], 0, Nuts_image[Image_rand[pos_Item_No]], TRUE);
 		 }
 		 /////////////////////画像が重なるなら消す////////////////////////////////
 		 for (s=0; s < Nut_MAX_Pieces; s++)//今までの画像を０から全部位置判別する
