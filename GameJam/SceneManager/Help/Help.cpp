@@ -5,12 +5,14 @@
 
 //色を指定
 int C = GetColor(255, 255, 255);
+int CancelSE;
 
 /// <summary>
 /// 更新処理
 /// </summary>
 eSceneType HelpUpdate(void)
 {
+	CancelSE = LoadSoundMem("sounds/SE/cancel.wav");
 	//Aボタンが押されたらタイトルへ
 	if (GetControllerState(eButtonA) == ePress)
 	{
