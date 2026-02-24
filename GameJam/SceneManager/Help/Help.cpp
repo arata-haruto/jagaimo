@@ -14,7 +14,7 @@ int Help_back;
 eSceneType HelpUpdate(void)
 {
 	CancelSE = LoadSoundMem("sounds/SE/cancel.wav");
-	Help_back = LoadGraph("images/background/bg_natural_mori.jpg");
+	Help_back = LoadGraph("images/background/Nature-others-7.png");
 	//Aボタンが押されたらタイトルへ
 	if (GetControllerState(eButtonA) == ePress)
 	{
