@@ -90,6 +90,17 @@ eSceneType ResultUpdate(void)
 		StopSoundMem(resultSE3);
 		return eRanking;
 	}
+
+	if (GetControllerState(eButtonA) == eRelease)
+	{
+		rankflag = 1;
+		AddData(now);
+		StopSoundMem(resultSE1);
+		StopSoundMem(resultSE2);
+		StopSoundMem(resultSE3);
+		return eRanking;
+	}
+
 	if (GetKeyInputState(KEY_INPUT_R) == eRelease)
 	{
 		AddData(now);
