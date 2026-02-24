@@ -20,7 +20,7 @@ eSceneType HelpUpdate(void)
 	CancelSE = LoadSoundMem("sounds/SE/cancel.wav");//効果音を読み込む
 	Help_back = LoadGraph("images/background/Nature-others-7.png");//画像を読み込む
 	//Aボタンが押されたらタイトルへ
-	if (GetControllerState(eButtonB) == ePress)
+	if (GetControllerState(eButtonA) == ePress)
 	{
 		PlaySoundMem(CancelSE, DX_PLAYTYPE_BACK);//効果音を鳴らす
 		return eTitle;
