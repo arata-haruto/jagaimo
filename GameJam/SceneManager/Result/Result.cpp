@@ -78,6 +78,11 @@ void ResultInit(void)
 		PlaySoundMem(resultSE1, DX_PLAYTYPE_BACK);
 		break;
 	}
+
+	if (flag == 0)
+	{
+		now.score = 0;
+	}
 }
 
 eSceneType ResultUpdate(void)
