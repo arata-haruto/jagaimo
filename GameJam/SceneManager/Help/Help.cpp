@@ -5,20 +5,20 @@
 
 //色を指定
 int C = GetColor(255, 190, 0);
-int CancelSE;
-int Help_back;
+int CancelSE;//戻る際の効果音
+int Help_back;//ヘルプ画面の背景
 
 /// <summary>
 /// 更新処理
 /// </summary>
 eSceneType HelpUpdate(void)
 {
-	CancelSE = LoadSoundMem("sounds/SE/cancel.wav");
-	Help_back = LoadGraph("images/background/Nature-others-7.png");
+	CancelSE = LoadSoundMem("sounds/SE/cancel.wav");//効果音を読み込む
+	Help_back = LoadGraph("images/background/Nature-others-7.png");//画像を読み込む
 	//Aボタンが押されたらタイトルへ
 	if (GetControllerState(eButtonA) == ePress)
 	{
-		PlaySoundMem(CancelSE, DX_PLAYTYPE_BACK);
+		PlaySoundMem(CancelSE, DX_PLAYTYPE_BACK);//効果音を鳴らす
 		return eTitle;
 	}
 
