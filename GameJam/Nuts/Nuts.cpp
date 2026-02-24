@@ -480,6 +480,24 @@ int NutsCheckCollect(float player_x, float player_y, float player_radius)//‚ ‚½‚
 	return 0; // ûW‚È‚µ
 }
 
+void NutsMagnetPull(float px, float py, float radius, float pull_speed)
+{
+	for (int i = 0; i < Nut_MAX_Pieces; i++)
+	{
+		if (Nuts_active[i] != TRUE) continue;
+		if (Rot_Pieces[i] == TRUE) continue;
+		float dx = px - Nuts_Position_X[i];
+		float dy = py - Nuts_Position_Y[i];
+		float dist = sqrtf(dx * dx + dy * dy);
+		if (dist < radius && dist > 1.0f)
+		{
+			float nx = dx / dist;
+			float ny = dy / dist;
+			Nuts_Position_X[i] += (int)(nx * pull_speed);
+			Nuts_Position_Y[i] += (int)(ny * pull_speed);
+		}
+	}
+}
 
 
 
