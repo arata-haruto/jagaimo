@@ -103,7 +103,7 @@ void TitleDraw(void)
 	DrawGraph(0, 0, Title_image, TRUE);
 	//文を描画する
 	DrawGraph(-680, -280, Logo_image,TRUE);
-	DrawString(200, 450, "スペースでインゲーム",Cr);
+	DrawString(200, 450, "スペースでゲーム開始",Cr);
 	DrawString(200, 500, "ヘルプ", Cr);
 	DrawString(200, 550, "ランキング", Cr);
 	DrawString(200, 600, "ゲームを終わる", Cr);
