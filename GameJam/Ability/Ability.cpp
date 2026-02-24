@@ -111,32 +111,68 @@ void AbilityUpdate(float deltaTime)
 
 void AbilityDraw(void)
 {
-	int x = D_WINDOW_SIZE_X - 200;
-	int y = 10;
-	unsigned int white = GetColor(255, 255, 255);
+	int slotW = 200;
+	int slotH = 50;
+	int gap = 10;
+	int totalW = slotW * 3 + gap * 2;
+	int panelX = (D_WINDOW_SIZE_X - totalW) / 2 - 10;
+	int panelY = D_WINDOW_SIZE_Y - slotH - 20;
+	int panelW = totalW + 20;
+	int panelH = slotH + 10;
+
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 160);
+	DrawBox(panelX, panelY, panelX + panelW, panelY + panelH, GetColor(0, 0, 0), TRUE);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	unsigned int white  = GetColor(255, 255, 255);
 	unsigned int yellow = GetColor(255, 255, 0);
+	unsigned int green  = GetColor(0, 200, 0);
+	int barMaxW = slotW - 10;
+	int barH = 6;
 
-	// Magnet
+	SetFontSize(18);
+
+	int sx = panelX + 10;
+	int sy = panelY + 5;
+
+	// Magnet (X button)
 	if (magnetTimer > 0.0f)
-		DrawFormatString(x, y, yellow, "[Z] Magnet  %.1fs", magnetTimer);
+	{
+		DrawFormatString(sx, sy, yellow, "[X] Magnet %.1fs", magnetTimer);
+		float ratio = magnetTimer / MAGNET_TIME;
+		DrawBox(sx, sy + 24, sx + barMaxW, sy + 24 + barH, GetColor(60, 60, 60), TRUE);
+		DrawBox(sx, sy + 24, sx + (int)(barMaxW * ratio), sy + 24 + barH, green, TRUE);
+	}
 	else
-		DrawFormatString(x, y, white, "[Z] Magnet  -%d", MAGNET_COST);
+		DrawFormatString(sx, sy, white, "[X] Magnet  -%d", MAGNET_COST);
 
-	y += 20;
+	sx += slotW + gap;
 
-	// Dash
+	// Dash (Y button)
 	if (dashTimer > 0.0f)
-		DrawFormatString(x, y, yellow, "[X] Dash    %.1fs", dashTimer);
+	{
+		DrawFormatString(sx, sy, yellow, "[Y] Dash %.1fs", dashTimer);
+		float ratio = dashTimer / DASH_TIME;
+		DrawBox(sx, sy + 24, sx + barMaxW, sy + 24 + barH, GetColor(60, 60, 60), TRUE);
+		DrawBox(sx, sy + 24, sx + (int)(barMaxW * ratio), sy + 24 + barH, green, TRUE);
+	}
 	else
-		DrawFormatString(x, y, white, "[X] Dash    -%d", DASH_COST);
+		DrawFormatString(sx, sy, white, "[Y] Dash    -%d", DASH_COST);
 
-	y += 20;
+	sx += slotW + gap;
 
-	// Boost
+	// Boost (B button)
 	if (boostTimer > 0.0f)
-		DrawFormatString(x, y, yellow, "[C] Boost   %.1fs", boostTimer);
+	{
+		DrawFormatString(sx, sy, yellow, "[B] Boost %.1fs", boostTimer);
+		float ratio = boostTimer / BOOST_TIME;
+		DrawBox(sx, sy + 24, sx + barMaxW, sy + 24 + barH, GetColor(60, 60, 60), TRUE);
+		DrawBox(sx, sy + 24, sx + (int)(barMaxW * ratio), sy + 24 + barH, green, TRUE);
+	}
 	else
-		DrawFormatString(x, y, white, "[C] Boost   -%d", BOOST_COST);
+		DrawFormatString(sx, sy, white, "[B] Boost   -%d", BOOST_COST);
+
+	SetFontSize(16);
 }
 
 int IsAbilityMagnetActive(void)
