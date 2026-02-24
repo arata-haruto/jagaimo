@@ -284,10 +284,6 @@ void PlayerDraw(float camera_x, float camera_y)
 	double scale = D_PLAYER_WIDTH / 128.0;
 	DrawRotaGraphF((float)px, (float)py, scale, 0.0, img, TRUE, flip);
 
-	// world position debug
-	DrawFormatString(4, 4, GetColor(255, 255, 0),
-		"X:%.0f / %.0f  Y:%.0f / %.0f",
-		player_pos.x, D_MAP_WIDTH, player_pos.y, D_MAP_HEIGHT);
 }
 
 Position2D GetPlayerPosition(void)
