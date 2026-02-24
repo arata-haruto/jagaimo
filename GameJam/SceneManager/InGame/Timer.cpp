@@ -26,3 +26,12 @@ int TimerIsTimeUp(void)
 {
 	return (remainingTime <= 0.0f) ? 1 : 0;
 }
+void TimerAddTime(float add_time)
+{
+	remainingTime += add_time;
+
+	// タイマーの上限制限
+	if (remainingTime > 30.0f) {
+		remainingTime = 30.0f;
+	 }
+}
