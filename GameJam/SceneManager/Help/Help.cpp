@@ -20,7 +20,7 @@ eSceneType HelpUpdate(void)
 	CancelSE = LoadSoundMem("sounds/SE/cancel.wav");//効果音を読み込む
 	Help_back = LoadGraph("images/background/Nature-others-7.png");//画像を読み込む
 	//Aボタンが押されたらタイトルへ
-	if (GetControllerState(eButtonA) == ePress)
+	if (GetControllerState(eButtonB) == ePress)
 	{
 		PlaySoundMem(CancelSE, DX_PLAYTYPE_BACK);//効果音を鳴らす
 		return eTitle;
@@ -46,6 +46,6 @@ void HelpDraw(void)
 	DrawString(200, 400, "Xボタン:アイテム寄せ　Yボタン:ダッシュ　Bボタン:得点ブースト", K);
 	DrawString(200, 450, "稼いだスコアは最後にどんぐりに変換されます", T);
 	DrawString(200, 470, "たくさんスコアを稼いで山盛りのどんぐりを目指そう!", T);
-	DrawString(200, 540, "Aボタンでタイトルに戻ります", B);
+	DrawString(200, 540, "Bボタンでタイトルに戻ります", B);
 }
 
