@@ -3,13 +3,14 @@
 #include "../Result/Result.h"
 #include "Dxlib.h"
 
-int Cr = GetColor(255, 255, 255);//色設定
+int Cr = GetColor(255, 190, 0);//色設定
 int title_image;//タイトル画像
 int cursor_number;//矢印の位置
 int blink_flag;//矢印のフラグ
 int TitleBGM;
 int PushSE;
 int Movement;
+int Title_image;
 
 /// <summary>
 /// 初期化処理
@@ -20,6 +21,7 @@ void TitleInit(void)
 	TitleBGM = LoadSoundMem("sounds/BGM/Title_bgm.mp3");
 	PushSE = LoadSoundMem("sounds/SE/buutton.wav");
 	Movement = LoadSoundMem("sounds/SE/menu_move.wav");
+	Title_image = LoadGraph("images/background/bg_natural_mori.jpg");
 	cursor_number = 0;//矢印の位置を一番目にする
 	InitFlag();//フラグ初期化を呼び出す
 
@@ -95,6 +97,7 @@ eSceneType TitleUpdate()
 /// <param name=""></param>
 void TitleDraw(void)
 {
+	DrawGraph(0, 0, Title_image, TRUE);
 	//文を描画する
 	DrawString(200, 200, "タイトル",Cr);
 	DrawString(200, 300, "スペースでインゲーム",Cr);
