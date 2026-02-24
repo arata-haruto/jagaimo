@@ -25,7 +25,7 @@ int Image_rand[999];//アイテム画像ランダム出力番号
 //int Fresh_Pieces[999];//新鮮な実の個数
 bool Rot_Pieces[999];//腐の実の個数
 int Rot_Timer[999];//時間差で腐を消す
-
+int FEVER_img;//フィーバー用の画像
 
 
 float Nuts_Scale[999];//Nut_MAX_Pieces
@@ -60,8 +60,9 @@ void NutsInit(void)
 	Nuts_image[5] = LoadGraph("Images/Item/mush_rot.png");
 	Nuts_image[6] = LoadGraph("Images/Item/walnut.png");
 	Nuts_image[7] = LoadGraph("Images/Item/walnut_rot.png");
-	Nuts_image[8] = LoadGraph("Images/Item/128.png");//フィーバー用の木の実
+	Nuts_image[8] = LoadGraph("Images/Item/Gold.png");//フィーバー用の木の実
 	Shine_image=LoadGraph("Images/Item/shine.png");//フィーバー用の木の実強調
+	FEVER_img= LoadGraph("Images/Item/FEVER.png");
 	/////////////////////初期化//////////////////////////////////////
 	Appear_Time = 0;//時間差で現れる
 	Appear_Time_flag = FALSE;//時間差で現れるフラグ
@@ -349,7 +350,8 @@ void NutsDraw(float camera_x, float camera_y)//スクリーン座標の取得
 	if (Is_Fever)
 	{
 		DrawString(gauge_x - 15, gauge_y - 20, "FEVER!", GetColor(255, 255, 0));
-	}
+		DrawRotaGraphF(450, 80,0.8,0, FEVER_img, TRUE);
+	} 
 	else 
 	{
 		DrawFormatString(gauge_x - 5, gauge_y - 20, GetColor(255, 255, 255), "%d/5", Fresh_Nuts_Count);
@@ -489,6 +491,9 @@ void NutsMagnetPull(float px, float py, float radius, float pull_speed)
 	}
 }
 
-
+bool GetIsFever(void)
+{
+	return Is_Fever; // フィーバー中ならTRUE
+}
 
 

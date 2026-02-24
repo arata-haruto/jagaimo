@@ -17,6 +17,8 @@ static int itemrot_se;
 static int time_se;
 static int time_warned;
 static int fontLoaded = FALSE;
+static int FEVER_BGM;
+static bool prev_fever_state = false; //1フレーム前がフィーバーだったか記録
 
 int Cr2 = GetColor(255, 255, 255);
 void InGameInit(void)
@@ -33,6 +35,7 @@ void InGameInit(void)
 	item_se  = LoadSoundMem("sounds/SE/itemget.wav");
 	itemrot_se  = LoadSoundMem("sounds/SE/itemrot.wav");
 	time_se     = LoadSoundMem("sounds/SE/time.wav");
+	FEVER_BGM = LoadSoundMem("sounds/BGM/FEVER_BGM.mp3");
 	time_warned  = FALSE;
 	if (fontLoaded == FALSE)
 	{
@@ -72,6 +75,29 @@ eSceneType InGameUpdate(void)
 			PlaySoundMem(itemrot_se, DX_PLAYTYPE_BACK);
 	}
 
+	bool current_fever_state = GetIsFever(); // 現在のフィーバー状態を取得
+
+	// ① フィーバーに突入した瞬間（前回 false -> 今回 true）
+	if (prev_fever_state == false && current_fever_state == true)
+	{
+		StopSoundMem(ingame_bgm); // 通常BGMを止める
+
+		// 音源の半ばから流す（例：15000なら15秒の位置からスタート）
+		SetSoundCurrentTime(15000, FEVER_BGM);
+
+		// BGMなのでループ再生(DX_PLAYTYPE_LOOP)にするのがおすすめです
+		PlaySoundMem(FEVER_BGM, DX_PLAYTYPE_LOOP,FALSE);
+	}
+	// ② フィーバーが終了した瞬間（前回 true -> 今回 false）を追加！
+	else if (prev_fever_state == true && current_fever_state == false)
+	{
+		StopSoundMem(FEVER_BGM); // フィーバーBGMを止める
+		PlaySoundMem(ingame_bgm, DX_PLAYTYPE_LOOP); // 通常のBGMを再度流す
+	}
+
+	// 状態を更新（次のフレームの「前回」になる）
+	prev_fever_state = current_fever_state;
+
 	TimerUpdate(deltaTime);
 
 	if (time_warned == FALSE && TimerGetRemainingTime() <= 5)
@@ -83,6 +109,7 @@ eSceneType InGameUpdate(void)
 	if (TimerIsTimeUp())
 	{
 		StopSoundMem(ingame_bgm);
+		StopSoundMem(FEVER_BGM);
 		return eResult;
 	}
 
