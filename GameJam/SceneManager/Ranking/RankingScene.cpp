@@ -35,7 +35,7 @@ eSceneType RankingUpdate(void)
 		PlaySoundMem(RankingBGM, DX_PLAYTYPE_BACK);
 	}
 	//Aボタンでタイトルへ戻る
-	if (GetControllerState(eButtonB) == ePress)
+	if (GetControllerState(eButtonA) == ePress)
 	{
 		StopSoundMem(RankingBGM);
 		return eTitle;
@@ -85,7 +85,7 @@ void RankingDraw(void)
 				DrawRotaGraph(600 + j * 45, 200 + i * 70, 0.4, 0.0, num[digit_1[j]], TRUE);
 			}
 		}
-		DrawString(350, 600, "Bボタンでタイトルへ戻る", GetColor(255, 255, 255));
+		DrawString(350, 600, "Aボタンでタイトルへ戻る", GetColor(255, 255, 255));
 		break;
 	case 1:
 		for (int i = 0; i < D_RANK_DATA_MAX; i++)
@@ -115,7 +115,7 @@ void RankingDraw(void)
 			DrawRotaGraph(200 + j * 45, 350, 0.4, 0.0, num[now_score_num[j]], TRUE);
 		}
 		
-		DrawString(350, 600, "Bボタンでタイトルへ戻る", GetColor(255, 255, 255));
+		DrawString(350, 600, "Aボタンでタイトルへ戻る", GetColor(255, 255, 255));
 		
 		break;
 	}

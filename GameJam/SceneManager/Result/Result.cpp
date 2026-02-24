@@ -92,8 +92,8 @@ eSceneType ResultUpdate(void)
 		StopSoundMem(resultSE3);
 		return eRanking;
 	}
-	//Bボタンでタイトルへ
-	if (GetControllerState(eButtonB) == eRelease)
+	//Aボタンでタイトルへ
+	if (GetControllerState(eButtonA) == ePress)
 	{
 		rankflag = 1;
 		AddData(now);
