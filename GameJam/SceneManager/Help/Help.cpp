@@ -4,8 +4,9 @@
 #include"../../Utility/InputManager.h"
 
 //色を指定
-int C = GetColor(255, 255, 255);
+int C = GetColor(255, 190, 0);
 int CancelSE;
+int Help_back;
 
 /// <summary>
 /// 更新処理
@@ -13,6 +14,7 @@ int CancelSE;
 eSceneType HelpUpdate(void)
 {
 	CancelSE = LoadSoundMem("sounds/SE/cancel.wav");
+	Help_back = LoadGraph("images/background/bg_natural_mori.jpg");
 	//Aボタンが押されたらタイトルへ
 	if (GetControllerState(eButtonA) == ePress)
 	{
@@ -29,6 +31,7 @@ eSceneType HelpUpdate(void)
 /// </summary>
 void HelpDraw(void)
 {
+	DrawGraph(0, 0, Help_back, TRUE);
 	//文を描画する
 	DrawString(200, 180, "リスを動かして木の実を集めよう！", C);
 	DrawString(200, 230, "Lスティックでリスを動かします", C);
