@@ -75,7 +75,7 @@ eSceneType TitleUpdate()
 		return eInGame;
 	}
 	//Bƒ{ƒ^ƒ“‚ð‰Ÿ‚³‚ê‚½‚ç“Á’è‚Ì‰æ–Ê‚É‘JˆÚ‚·‚é
-	if (GetKeyInputState(KEY_INPUT_Z) == ePress|| GetControllerState(eButtonB)==ePress)
+	if (GetKeyInputState(KEY_INPUT_Z) == ePress|| GetControllerState(eButtonA)==ePress)
 	{
 		switch (cursor_number)
 		{
