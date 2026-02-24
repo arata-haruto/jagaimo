@@ -49,9 +49,9 @@ eSceneType InGameUpdate(void)
 	Position2D pos = GetPlayerPosition();
 	CameraUpdate(pos.x, pos.y);
 
-	//if (IsAbilityMagnetActive())
+	if (IsAbilityMagnetActive())
 	{
-		//NutsMagnetPull(pos.x, pos.y, 200.0f, 5.0f);
+		NutsMagnetPull(pos.x, pos.y, 200.0f, 5.0f);
 	}
 
 	int score = NutsCheckCollect(pos.x, pos.y, 16.0f);
