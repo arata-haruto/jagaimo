@@ -16,6 +16,7 @@ eSceneType HelpUpdate(void)
 	//Aボタンが押されたらタイトルへ
 	if (GetControllerState(eButtonA) == ePress)
 	{
+		PlaySoundMem(CancelSE, DX_PLAYTYPE_BACK);
 		return eTitle;
 	}
 
