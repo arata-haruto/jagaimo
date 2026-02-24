@@ -10,7 +10,7 @@ int Nuts_Position_X[999];//–Ø‚ÌÀXÀ•W
 int Nuts_Position_Y[999];//–Ø‚ÌÀYÀ•W
 int Nut_MAX_Pieces;//–Ø‚ÌÀÅ‘åŒÂ”
 
-int Nuts_image[8];//‰æ‘œ
+int Nuts_image[9];//‰æ‘œ
 
 static Position2D Nuts_pos;//–Ø‚ÌÀˆÊ’u
 int pos_rand_X[999];//X²ƒ‰ƒ“ƒ_ƒ€İ’è
@@ -24,11 +24,25 @@ int Image_rand[999];//ƒAƒCƒeƒ€‰æ‘œƒ‰ƒ“ƒ_ƒ€o—Í”Ô†
 bool Rot_Pieces[999];//•…‚ÌÀ‚ÌŒÂ”
 int Rot_Timer[999];//ŠÔ·‚Å•…‚ğÁ‚·
 int Rot_T;
-//int order;
 int sorting;
 int R_Pieces;
 int F_Pieces;
 float Nuts_Scale[999];//Nut_MAX_Pieces
+
+// --- ƒtƒB[ƒo[—p‚É’Ç‰Á ---
+int Fresh_Nuts_Count = 0; // W‚ß‚½V‘N‚ÈÀ‚Ì”
+bool Is_Fever = false;    // ƒtƒB[ƒo[’†‚©‚Ç‚¤‚©ƒtƒ‰ƒO
+int Fever_Time_Count = 0; // ƒtƒB[ƒo[‚ÌŠÔ‚ğŒv‚é(ƒtƒŒ[ƒ€)
+
+// ƒtƒB[ƒo[‘O‚Ìó‘Ô‚ğ•Û‘¶‚·‚é‚½‚ß‚ÌƒoƒbƒNƒAƒbƒv
+int Backup_Nuts_active[999];
+int Backup_Image_rand[999];
+int Backup_Nut_MAX_Pieces;
+// ------------------------
+
+// k¬ƒAƒjƒ[ƒVƒ‡ƒ“—p
+bool Nuts_IsVanishing[999];  // ‚»‚ê‚¼‚ê‚ÌÀ‚ªk¬’†‚©‚Ç‚¤‚©
+bool Is_FeverEnding = false; // ƒtƒB[ƒo[I—¹‰‰o’†‚©‚Ç‚¤‚©
 
 void NutsInit(void)
 {
@@ -42,6 +56,7 @@ void NutsInit(void)
 	Nuts_image[5] = LoadGraph("Images/Item/mush_rot.png");
 	Nuts_image[6] = LoadGraph("Images/Item/walnut.png");
 	Nuts_image[7] = LoadGraph("Images/Item/walnut_rot.png");
+	Nuts_image[8] = LoadGraph("Images/Item/128.png");//ƒtƒB[ƒo[—p‚Ì–Ø‚ÌÀ
 	/////////////////////‰Šú‰»//////////////////////////////////////
 	sorting = 0;
 	Appear_Time = 0;//ŠÔ·‚ÅŒ»‚ê‚é
@@ -49,30 +64,78 @@ void NutsInit(void)
 	R_Pieces=0;
     F_Pieces=0;
 	Rot_T = 0;
+	Nut_MAX_Pieces = 0;
+	Is_Fever = false;
+	Is_FeverEnding = false;
+	Fresh_Nuts_Count = 0;
+	for (int i = 0; i < 999; i++)
+	{
+		Nuts_IsVanishing[i] = FALSE; // ‰Šú‰»
+		Nuts_Scale[i] = 0.0f;        // ”O‚Ì‚½‚ßƒXƒP[ƒ‹‚à‰Šú‰»
+	}
+
 /////////////////////////////////ƒ‰ƒ“ƒ_ƒ€”z’u////////////////////////////////////////
 	for (pos_Item_No = 0; pos_Item_No < 999; pos_Item_No++)//‚R‚OŒÂ”z’u
 	{
-		pos_rand_X[pos_Item_No] = GetRand(2200);//X²ƒ‰ƒ“ƒ_ƒ€İ’è(Å¬’l’²®j
-		pos_rand_Y[pos_Item_No] = GetRand(1500+1500);//Y²ƒ‰ƒ“ƒ_ƒ€İ’è
-		Image_rand[pos_Item_No] = GetRand(8);//‰æ‘œƒ‰ƒ“ƒ_ƒ€İ’è
+		pos_rand_X[pos_Item_No] = GetRand(2700)+80;//X²ƒ‰ƒ“ƒ_ƒ€İ’è(Å¬’l’²®j
+		pos_rand_Y[pos_Item_No] = GetRand(2030)+80;//Y²ƒ‰ƒ“ƒ_ƒ€İ’è
+		Image_rand[pos_Item_No] = GetRand(7);//‰æ‘œƒ‰ƒ“ƒ_ƒ€İ’è
 		Nuts_Position_X[pos_Item_No] = D_MAP_WIDTH - pos_rand_X[pos_Item_No];//ƒ[ƒ‹ƒh“à‚ÌXˆÊ’u
-		Nuts_Position_Y[pos_Item_No] = D_MAP_WIDTH - pos_rand_Y[pos_Item_No];//ƒ[ƒ‹ƒh“à‚ÌYˆÊ’u
-		Nuts_active[pos_Item_No] = TRUE;//•\¦
-		Nut_MAX_Pieces++;
-		//“Ç‚İ‚ñ‚¾‰æ‘œ‚ª•…‚È‚ç(‰æ‘œƒ‰ƒ“ƒ_ƒ€o—Í‚ªŠï”‚È‚çj
-		if (Image_rand[pos_Item_No] == 1 || Image_rand[pos_Item_No] == 3 || Image_rand[pos_Item_No] == 5 || Image_rand[pos_Item_No] == 7)
-		{
-			Rot_Pieces[pos_Item_No]=TRUE; //•…‚ÌŒÂ”‚ğ‘‚â‚·
-			
-		}
-		else
-		{
-			
-			Rot_Pieces[pos_Item_No]=FALSE;//V‚ÌŒÂ”‚ğ‘‚â‚·
-		}
+		Nuts_Position_Y[pos_Item_No] = D_MAP_HEIGHT - pos_rand_Y[pos_Item_No];//ƒ[ƒ‹ƒh“à‚ÌYˆÊ’u
+		bool Is_overlap = false; // d‚È‚è”»’èƒtƒ‰ƒO
 		
-	}
+		// 2. ‚±‚ê‚Ü‚Å‚É”z’u‚µ‚½Šm’è‚µ‚½–Ø‚ÌÀ‚Æd‚È‚Á‚Ä‚¢‚È‚¢‚©ƒ`ƒFƒbƒN
+			for (int s = 0; s < pos_Item_No; s++)
+			{
+				int s_posX1 = Nuts_Position_X[s] - 50;
+				int s_posX2 = Nuts_Position_X[s] + 50;
+				int s_posY1 = Nuts_Position_Y[s] - 50;
+				int s_posY2 = Nuts_Position_Y[s] + 50;
 
+				// d‚È‚è”»’è
+				if (s_posX1 < Nuts_Position_X[pos_Item_No] && Nuts_Position_X[pos_Item_No] < s_posX2 &&s_posY1 < Nuts_Position_Y[pos_Item_No] && Nuts_Position_Y[pos_Item_No] < s_posY2)
+				{
+					Is_overlap = true; // d‚È‚Á‚Ä‚¢‚é
+					break;             //ƒ‹[ƒv‚ğ”²‚¯‚é
+				}
+			}
+		
+			// 3. d‚È‚è”»’è‚ÌŒ‹‰Ê‚Åˆ—‚ğ•ª‚¯‚é
+			if (Is_overlap == false)
+			{
+				Image_rand[pos_Item_No] = GetRand(7);
+				Nuts_active[pos_Item_No] = TRUE;
+				Nut_MAX_Pieces++;
+
+				if (Image_rand[pos_Item_No] == 1 || Image_rand[pos_Item_No] == 3 || Image_rand[pos_Item_No] == 5 || Image_rand[pos_Item_No] == 7)
+				{
+					Rot_Pieces[pos_Item_No] = TRUE;
+				}
+				else 
+				{
+					Rot_Pieces[pos_Item_No] = FALSE;
+				}
+			}
+			else
+			{
+				//d‚È‚Á‚Ä‚¢‚½‚ç[‚µ‚Äƒ‰ƒ“ƒ_ƒ€‚â‚è’¼‚·
+				pos_Item_No--;
+			}
+	}
+	//Å‰100ŒÂ‚Ì‚¤‚¿A‚Ç‚ê‚©1‚Â"‚¾‚¯"‚ğƒtƒB[ƒo[À‚É‚·‚é
+	int fever_set_flag = 0;
+	while (fever_set_flag == 0)//ƒZƒbƒg‚³‚¹‚é
+	{
+		int r = GetRand(99); //Å‰‚Ì100ŒÂ‚Ì’†‚©‚çƒ‰ƒ“ƒ_ƒ€‚Å‘I‚Ô
+
+		// ‚»‚ÌêŠ‚Ì–Ø‚ÌÀ‚ª‚¿‚á‚ñ‚Æ•\¦(”z’u)‚³‚ê‚Ä‚¢‚é‚à‚Ì‚È‚ç
+		if (Nuts_active[r] == TRUE)
+		{
+			Image_rand[r] = 8;     // ƒtƒB[ƒo[–Ø‚ÌÀ‚É‘Ö‚¦‚é
+			Rot_Pieces[r] = FALSE; // V‘N‚È–Ø‚ÌÀ‚Éİ’è
+			fever_set_flag = 1;    // 1‚Âİ’èŠ®—¹‚µ‚½‚Ì‚Åƒ‹[ƒv‚ğ”²‚¯‚é
+		}
+	}
 }
 
 void NutsUpdate(void)
@@ -80,37 +143,77 @@ void NutsUpdate(void)
 	int time = TimerGetRemainingTime();
 	
 
-	switch (time)//–Ø‚ÌÀ‚Ì”’²®
+	//ƒtƒB[ƒo[‚ÌƒJƒEƒ“ƒgƒ_ƒEƒ“‚ÆI—¹ˆ—
+	if (Is_Fever==TRUE)
 	{
-	case 5:////c5‚Å70
-		Nut_MAX_Pieces = 999;
-		break;
-	case 10://c10‚Å60
-		Nut_MAX_Pieces = 500;
-		break;
-	case 15://c15‚Å50
-		Nut_MAX_Pieces = 400;
-		break;
-	case 20://c20‚Å40
-		Nut_MAX_Pieces = 300;
-		break;
-	case 25://c25‚Å30
-		Nut_MAX_Pieces = 200;
-		break;
-	case 30://Å‰20
-		Nut_MAX_Pieces = 140;
-		break;
-	default:
-		break;
+		Fever_Time_Count--;
+		if (Fever_Time_Count <= 0) 
+		{
+			// 5•bŒo‰ß‚µ‚½‚çŒ³‚Ì”z’u‚ÉŠ®‘S‚É–ß‚·
+			Is_Fever = false;//ƒtƒB[ƒo[I—¹
+			Is_FeverEnding = true;//Á‚¦‚éƒ‚[ƒVƒ‡ƒ“’†
+		
+			// Œ»İƒ}ƒbƒv‚É‚¢‚é‘S‚Ä‚ÌÀ‚ğÁ‚·
+			for (int i = 0; i < 999; i++) 
+			{
+				if (Nuts_active[i] == TRUE) 
+				{
+					Nuts_IsVanishing[i] = TRUE;
+				}
+			}
+
+		}
 	}
-	//if (time == 11 || time == 21)
-	//{
-	//	for(int d=0;d< Nut_MAX_Pieces;d++)
-	//	if (Rot_Pieces[d] == TRUE)
-	//	{
-	//		Nuts_active[d] = FALSE;//Á‚·
-	//	}
-	//}
+	//ƒtƒB[ƒo[I—¹‰‰o
+	else if (Is_FeverEnding) {
+		// ‚·‚×‚Ä‚ÌÀ‚ªÁ‚¦I‚í‚Á‚½‚©ƒ`ƒFƒbƒN
+		bool allVanished = true;
+		for (int i = 0; i < 999; i++)
+		{
+			// ‚Ü‚¾•\¦‚³‚ê‚Ä‚¢‚ÄA‚©‚Âk¬’†‚Ì‚à‚Ì‚ª‚ ‚ê‚Î
+			if (Nuts_active[i] == TRUE && Nuts_IsVanishing[i] == TRUE)
+			{
+				allVanished = false; // ‚Ü‚¾Á‚¦I‚í‚Á‚Ä‚¢‚È‚¢
+				break;
+			}
+		}
+
+		// ‘SˆõÁ‚¦I‚í‚Á‚½‚çAŒ³‚Ì”z’u‚ğ•œŒ³‚·‚é
+		if (allVanished) 
+		{
+			Is_FeverEnding = false; // I—¹‰‰oŠ®—¹
+			Nut_MAX_Pieces = Backup_Nut_MAX_Pieces;
+			for (int i = 0; i < 999; i++) 
+			{
+				Nuts_active[i] = Backup_Nuts_active[i];
+				Image_rand[i] = Backup_Image_rand[i];
+				Nuts_IsVanishing[i] = FALSE; // ƒŠƒZƒbƒg
+				// •œ‹A‚µ‚½À‚à‚Ó‚í‚Á‚ÆoŒ»‚³‚¹‚é‚½‚ß‚ÉƒXƒP[ƒ‹‚ğ0‚É‚·‚é
+				if (Nuts_active[i] == TRUE) 
+				{
+					Nuts_Scale[i] = 0.0f;
+				}
+			}
+		}
+	}
+	//’Êí
+	else {
+		// ƒtƒB[ƒo[‚µ‚Ä‚¢‚È‚¢‚¾‚¯A’Êí‚ÌŒÂ”’²®‚ğs‚¤
+		switch (time)//–Ø‚ÌÀ‚Ì”’²®
+		{
+		case 5:  Nut_MAX_Pieces = 500; break;
+		case 10: Nut_MAX_Pieces = 450; break;
+		case 15: Nut_MAX_Pieces = 300; break;
+		case 20: Nut_MAX_Pieces = 200; break;
+		case 25: Nut_MAX_Pieces = 150; break;
+		case 30: Nut_MAX_Pieces = 100; break;
+		default: break;
+		}
+	}
+
+	sorting = 0;
+	R_Pieces = 0;
+	F_Pieces = 0;
 	for (sorting; sorting < Nut_MAX_Pieces; sorting++)//d•ª‚¯
 	{
 		if (Rot_Pieces[sorting] == FALSE)
@@ -122,17 +225,26 @@ void NutsUpdate(void)
 			F_Pieces++;
 		}
 	}
-	for (int i = 0; i < Nut_MAX_Pieces; i++)//Šg‘å
+	// Šg‘åEk¬ƒAƒjƒ[ƒVƒ‡ƒ“
+	for (int i = 0; i < 999; i++) // ‘S—v‘fƒ`ƒFƒbƒN
 	{
 		if (Nuts_active[i] == TRUE)
 		{
-			// ‚Ü‚¾–Ú•W‚Ì0.5‚æ‚è¬‚³‚¯‚ê‚ÎA‘å‚«‚­‚·‚é
-			if (Nuts_Scale[i] < 0.5f)
+			// Á‚¦‚é@k¬
+			if (Nuts_IsVanishing[i] == TRUE)
 			{
-				Nuts_Scale[i] += 0.02f; // 1ƒtƒŒ[ƒ€‚²‚Æ‚É0.05‚¸‚Â‘å‚«‚­‚È‚éi‘¬“x‚Í‚¨D‚İ‚Å’²®j
-
-				// 0.5‚ğ’´‚¦‚È‚¢‚æ‚¤‚Éƒsƒ^ƒb‚Æ~‚ß‚é
-				if (Nuts_Scale[i] > 0.5f)
+				Nuts_Scale[i] -= 0.05f; // k¬ƒXƒs[ƒhi’²®‰Âj
+				if (Nuts_Scale[i] <= 0.0f) {
+					Nuts_Scale[i] = 0.0f;
+					Nuts_active[i] = FALSE;      // Š®‘S‚ÉÁ‚·
+					Nuts_IsVanishing[i] = FALSE; // k¬ƒ‚[ƒh‰ğœ
+				}
+			}
+			// oŒ»@Šg‘å
+			else if (Nuts_Scale[i] < 0.5f) 
+			{
+				Nuts_Scale[i] += 0.02f; // Šg‘åƒXƒs[ƒh
+				if (Nuts_Scale[i] > 0.5f) 
 				{
 					Nuts_Scale[i] = 0.5f;
 				}
@@ -174,14 +286,70 @@ void NutsDraw(float camera_x, float camera_y)//ƒXƒNƒŠ[ƒ“À•W‚Ìæ“¾
 					 //ª‚Æ¡•\¦‚³‚¹‚½‚¢‰æ‘œ‚ÌÀ•W‚ªd‚È‚ç‚È‚¢‚©
 					 if (s_posX1 < Nuts_Position_X[pos_Item_No]&& Nuts_Position_X[pos_Item_No]  < s_posX2 && s_posY1 < Nuts_Position_Y[pos_Item_No]&& Nuts_Position_Y[pos_Item_No] < s_posY2)
 					 {
-						 Nuts_active[pos_Item_No] = FALSE;//d‚È‚é‚È‚çÁ‚·
+						 // ƒtƒB[ƒo[–Ø‚ÌÀ‚ªd‚È‚Á‚Ä‚àÁ‚¦‚È‚¢‚æ‚¤‚É‚·‚é
+						 if (Image_rand[pos_Item_No] != 8) 
+						 {
+							 Nuts_active[pos_Item_No] = FALSE;//d‚È‚é‚È‚çÁ‚·
+						 }
 					 }
 				 }
 			 }
 		 }
-		 /////////////////////////////////////////////////////////////////////////////
+		 
+	}
+	/////////////////////////////////////////////////////////////////////////////
+
+	int gauge_x = 50;           // ƒQ[ƒW‚Ì¶ãXÀ•W (‰æ–Ê¶’[‚©‚ç50px)
+	int gauge_y = 50;           // ƒQ[ƒW‚Ì¶ãYÀ•W (‰æ–Êã’[‚©‚ç50px)
+	int gauge_max_width = 300;  // ƒQ[ƒW‚ÌÅ‘å• (ƒsƒNƒZƒ‹)
+	int gauge_height = 20;      // ƒQ[ƒW‚Ì‚‚³
+
+	float ratio = 0.0f;         // ƒQ[ƒW‚ÌŠ„‡ (0.0 -1.0)
+	unsigned int gauge_color;   // ƒQ[ƒW‚ÌF
+
+	if (Is_Fever == false)
+	{
+		// ƒtƒB[ƒo[‚Å‚Í‚È‚¢FW‚ß‚½”‚ÌŠ„‡ (Å‘å20)
+		ratio = (float)Fresh_Nuts_Count / 5.0f;
+		gauge_color = GetColor(0, 255, 100); // •’i‚Í—ÎF
+	}
+	else
+	{
+		// ƒtƒB[ƒo[’†Fc‚èŠÔ‚ÌŠ„‡ (Å‘å300ƒtƒŒ[ƒ€ = 60FPS ~ 5•b)
+		ratio = (float)Fever_Time_Count / (60.0f * 5.0f);
+		gauge_color = GetColor(255, 150, 0); // ƒtƒB[ƒo[’†‚ÍƒIƒŒƒ“ƒWF
 	}
 
+	// Š„‡‚ª0-1‚Ì”ÍˆÍ‚Éû‚Ü‚é‚æ‚¤‚É
+	if (ratio < 0.0f) ratio = 0.0f;
+	if (ratio > 1.0f) ratio = 1.0f;
+
+	// Œ»İ‚ÌƒQ[ƒW‚Ì•‚ğŒvZ
+	int current_width = (int)(gauge_max_width * ratio);
+
+	// 1. ƒQ[ƒW‚Ì”wŒii‹ó‚Á‚Û‚Ì•”•ªEˆÃ‚¢ƒOƒŒ[j‚ğ•`‰æ
+	DrawBox(gauge_x, gauge_y, gauge_x + gauge_max_width, gauge_y + gauge_height, GetColor(50, 50, 50), TRUE);
+
+	// 2. ƒQ[ƒW‚Ì’†g‚ğ•`‰æ
+	if (current_width > 0) 
+	{
+		DrawBox(gauge_x, gauge_y, gauge_x + current_width, gauge_y + gauge_height, gauge_color, TRUE);
+	}
+
+	// 3. ƒQ[ƒW‚Ì˜güi”’j‚ğ•`‰æ
+	DrawBox(gauge_x, gauge_y, gauge_x + gauge_max_width, gauge_y + gauge_height, GetColor(255, 255, 255), FALSE);
+
+	// 4. •¶šî•ñ
+	if (Is_Fever==TRUE)
+	{
+		DrawString(gauge_x, gauge_y - 20, "FEVER TIME!!", GetColor(255, 255, 0));
+	}
+	else 
+	{
+		DrawFormatString(gauge_x, gauge_y - 20, GetColor(255, 255, 255), "Fever Gauge: %d / 20", Fresh_Nuts_Count);
+	}
+
+	/////////////////////////////////ƒfƒoƒbƒN—p//////////////////////////////////////////////////////////////////////////////////
 	//DrawFormatString(400, 4, GetColor(255, 255, 0),"X:%d  Y:%d ",Nuts_Position_X[0], Nuts_Position_Y[0]);//ˆê‚Â–Ú‚ÌˆÊ’u
 	//DrawFormatString(400, 18, GetColor(255, 255, 0),"R:%d F:%d", R_Pieces, F_Pieces);//“ñ‚Â–Ú‚ÌˆÊ’u
 	//DrawFormatString(400, 38, GetColor(255, 255, 0),"time:%f", Appear_Time);//“ñ‚Â–Ú‚ÌˆÊ’u
@@ -201,6 +369,10 @@ Position2D GetNutsPosition(void)
 // ‰æ‘œ”Ô†‚©‚çí—Ş•ÊƒXƒRƒA‚ğ•Ô‚·
 static int GetNutsScore(int image_id)
 {
+
+	
+	if (image_id == 8) return 0;// ƒtƒB[ƒo[–Ø‚ÌÀ‚ÌƒXƒRƒA
+
 	int is_rot = (image_id % 2 == 1); // Šï””Ô† = •…‚Á‚Ä‚¢‚é
 	switch (image_id / 2) // 0,1=seed 2,3=nuts 4,5=mush 6,7=walnut
 	{
@@ -221,30 +393,74 @@ int NutsCheckCollect(float player_x, float player_y, float player_radius)//‚ ‚½‚
 			float dx = player_x - Nuts_Position_X[pos_Item_No];
 			float dy = player_y - Nuts_Position_Y[pos_Item_No];
 			float distance = sqrtf(dx * dx + dy * dy);
+			
 			if (distance < player_radius + 16.0f) // –Ø‚ÌÀ‚Ì”¼Œa16px
 			{
 				Nuts_active[pos_Item_No] = FALSE; // –Ø‚ÌÀ‚ğÁ‚·
-			
+				int score = GetNutsScore(Image_rand[pos_Item_No]); // ƒXƒRƒA‚ğæ“¾‚·‚é
+
+				if (Is_Fever == false)//ƒtƒB[ƒo[‚Å‚Í‚È‚¢
+				{
+					bool triggerFever = false; //ƒtƒB[ƒo[‚ğ”­“®‚³‚¹‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO
+
+					//ƒtƒB[ƒo[–Ø‚ÌÀ‚ğæ‚Á‚½‚©A20ŒÂW‚Ü‚Á‚½‚çƒtƒ‰ƒO‚ğ—§‚Ä‚é
+					if (Image_rand[pos_Item_No] == 8)
+					{
+						triggerFever = true; // ƒtƒB[ƒo[–Ø‚ÌÀ‚È‚ç‘¦”­“®I
+					}
+					else if (Image_rand[pos_Item_No] % 2 == 0)
+					{
+						// V‘N‚ÈÀ‚ğ‚TŒÂW‚ß‚Ä‚à”­“®
+						Fresh_Nuts_Count++;
+						if (Fresh_Nuts_Count >= 5)
+						{
+							triggerFever = true; // 5ŒÂW‚Ü‚Á‚Ä‚à”­“®I
+						}
+					}
+					//ƒtƒB[ƒo[’†
+						if (triggerFever == true) 
+						{
+							Is_Fever = true;
+							Fever_Time_Count = 60 * 5; // 60FPS‚Å5•bŠÔ
+							Fresh_Nuts_Count = 0;      // ƒJƒEƒ“ƒgƒŠƒZƒbƒg
+
+							Backup_Nut_MAX_Pieces = Nut_MAX_Pieces; // Œ»İ‚ÌÅ‘å•\¦”‚ğ•Û‘¶
+
+							Nut_MAX_Pieces = 800; // ƒtƒB[ƒo[’†‚Í•\¦˜g‚ğƒhƒoƒb‚Æ‘‚â‚·
+
+							for (int i = 0; i < 999; i++) {
+								Backup_Nuts_active[i] = Nuts_active[i]; // Œ³‚Ì•\¦ó‘Ô‚ğ•Û‘¶
+								Backup_Image_rand[i] = Image_rand[i];   // Œ³‚Ì‰æ‘œ”Ô†‚ğ•Û‘¶
+
+								if (i < Nut_MAX_Pieces)
+								{
+									if (Backup_Nuts_active[i] == TRUE) 
+									{
+										// ‚à‚Æ‚à‚Æ•\¦‚³‚ê‚Ä‚¢‚é‚à‚Ì‚ª•…‚Á‚½À‚È‚çÁ‚·
+										if (Image_rand[i] % 2 != 0)
+										{
+											Nuts_IsVanishing[i] = TRUE;
+										}
+									}
+									else 
+									{
+										// ‚à‚Æ‚à‚Æ”ñ•\¦‚¾‚Á‚½êŠ‚ğuV‘N‚ÈÀv‚Æ‚µ‚Ä‘å—Ê”­¶‚³‚¹‚é
+										Nuts_active[i] = TRUE;
+										Nuts_Scale[i] = 0.0f; // ƒ[ƒ‚©‚çŠg‘åƒAƒjƒ[ƒVƒ‡ƒ“‚³‚¹‚é
+										Image_rand[i] = (GetRand(3)) * 2; // 0, 2, 4, 6 ‚Ì‚Ç‚ê‚©(V‘N‚ÈÀŒÀ’è)
+										Nuts_IsVanishing[i] = FALSE;
+									}
+								}
+							}
+						}
+				}
+	
 				return GetNutsScore(Image_rand[pos_Item_No]); // í—Ş•ÊƒXƒRƒA
 			}
 		}
 	}
 	return 0; // ûW‚È‚µ
 }
-
-
-
-
-
-
-
-
-
-
-
-//void OtherDraw() {
-//	int time = TimerGetRemainingTime();
-//}
 
 
 
