@@ -16,3 +16,4 @@ void NutsDestroy(void);
 Position2D GetNutsPosition(void);
 void NutsMagnetPull(float player_x, float player_y, float radius, float pull_speed);
 int NutsCheckCollect(float player_x, float player_y, float player_radius);
+bool GetIsFever(void);

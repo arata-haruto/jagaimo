@@ -3,5 +3,8 @@
 // 制限時間タイマー
 void TimerInit(float limitSeconds);
 void TimerUpdate(float deltaTime);
-int  TimerGetRemainingTime(void);  // 残り秒数（整数）
-int  TimerIsTimeUp(void);          // 1: 時間切れ, 0: まだ
+int   TimerGetRemainingTime(void);   // 残り秒数（整数）
+float TimerGetRemainingTimeF(void);  // 残り秒数（float）
+float TimerGetTotalTime(void);       // 制限時間の総秒数
+void TimerAddTime(float add_time);
+int   TimerIsTimeUp(void);           // 1: 時間切れ, 0: まだ

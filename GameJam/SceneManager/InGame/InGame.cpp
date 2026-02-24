@@ -6,7 +6,9 @@
 #include "../../Camera/Camera.h"
 #include "../../Nuts/Nuts.h"
 #include "../../Ability/Ability.h"
+#include "../../System/ProjectConfig.h"
 #include "DxLib.h"
+#include <string.h>
 
 static int prevTime = 0;
 static int ingame_bgm;
@@ -14,6 +16,9 @@ static int item_se;
 static int itemrot_se;
 static int time_se;
 static int time_warned;
+static int fontLoaded = FALSE;
+static int FEVER_BGM;
+static bool prev_fever_state = false; //1フレーム前がフィーバーだったか記録
 
 int Cr2 = GetColor(255, 255, 255);
 void InGameInit(void)
@@ -30,7 +35,13 @@ void InGameInit(void)
 	item_se  = LoadSoundMem("sounds/SE/itemget.wav");
 	itemrot_se  = LoadSoundMem("sounds/SE/itemrot.wav");
 	time_se     = LoadSoundMem("sounds/SE/time.wav");
+	FEVER_BGM = LoadSoundMem("sounds/BGM/FEVER_BGM.mp3");
 	time_warned  = FALSE;
+	if (fontLoaded == FALSE)
+	{
+		AddFontResourceEx("images/UI/x10y12pxDonguriDuel.ttf", FR_PRIVATE, NULL);
+		fontLoaded = TRUE;
+	}
 	PlaySoundMem(ingame_bgm, DX_PLAYTYPE_LOOP);
 }
 
@@ -64,6 +75,29 @@ eSceneType InGameUpdate(void)
 			PlaySoundMem(itemrot_se, DX_PLAYTYPE_BACK);
 	}
 
+	bool current_fever_state = GetIsFever(); // 現在のフィーバー状態を取得
+
+	// フィーバーに突入
+	if (prev_fever_state == false && current_fever_state == true)
+	{
+		StopSoundMem(ingame_bgm); // 通常BGMを止める
+
+		// 音源の途中から流したい
+		SetSoundCurrentTime(15000, FEVER_BGM);
+
+		// フィーバーBGM
+		PlaySoundMem(FEVER_BGM, DX_PLAYTYPE_LOOP,FALSE);
+	}
+	// フィーバーが終了
+	else if (prev_fever_state == true && current_fever_state == false)
+	{
+		StopSoundMem(FEVER_BGM); // フィーバーBGMを止める
+		PlaySoundMem(ingame_bgm, DX_PLAYTYPE_LOOP); // もとのBGMを再度流す
+	}
+
+	// 状態を更新
+	prev_fever_state = current_fever_state;
+
 	TimerUpdate(deltaTime);
 
 	if (time_warned == FALSE && TimerGetRemainingTime() <= 5)
@@ -75,6 +109,7 @@ eSceneType InGameUpdate(void)
 	if (TimerIsTimeUp())
 	{
 		StopSoundMem(ingame_bgm);
+		StopSoundMem(FEVER_BGM);
 		return eResult;
 	}
 
@@ -86,14 +121,76 @@ void InGameDraw(void)
 	NutsDraw(CameraGetX(), CameraGetY());
 	PlayerDraw(CameraGetX(), CameraGetY());
 
-	
-	char timeBuf[16];
-	sprintf_s(timeBuf, "Time: %d", TimerGetRemainingTime());
-	DrawString(10, 50, timeBuf, Cr2);
+	ChangeFont("x10y12pxDonguriDuel");
+	ChangeFontType(DX_FONTTYPE_NORMAL);
 
-	char scoreBuf[32];
-	sprintf_s(scoreBuf, "Score: %d", ScoreGetTotal());
-	DrawString(10, 80, scoreBuf, Cr2);
+	// --- スコア ---
+	{
+		SetFontSize(24);
+		char scoreBuf[32];
+		sprintf_s(scoreBuf, "Score: %d", ScoreGetTotal());
+		int textW = GetDrawStringWidth(scoreBuf, (int)strlen(scoreBuf));
+		int panelW = textW + 20;
+		int panelH = 40;
+		int panelX = D_WINDOW_SIZE_X - panelW - 10;
+		int panelY = 10;
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 160);
+		DrawBox(panelX, panelY, panelX + panelW, panelY + panelH, GetColor(0, 0, 0), TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		DrawFormatString(panelX + 10, panelY + 8, GetColor(255, 255, 255), "%s", scoreBuf);
+		SetFontSize(16);
+	}
+
+	// --- タイマー ---
+	{
+		int remaining = TimerGetRemainingTime();
+		float remainF = TimerGetRemainingTimeF();
+		float total = TimerGetTotalTime();
+		float ratio = (total > 0.0f) ? (remainF / total) : 0.0f;
+		if (ratio < 0.0f) ratio = 0.0f;
+		if (ratio > 1.0f) ratio = 1.0f;
+
+		int panelW = 220, panelH = 55;
+		int panelX = (D_WINDOW_SIZE_X - panelW) / 2;
+		int panelY = 10;
+
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 160);
+		DrawBox(panelX, panelY, panelX + panelW, panelY + panelH, GetColor(0, 0, 0), TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+		unsigned int textColor, barColor;
+		if (remaining > 10)
+		{
+			textColor = GetColor(255, 255, 255);
+			barColor = GetColor(0, 200, 0);
+		}
+		else if (remaining > 5)
+		{
+			textColor = GetColor(255, 255, 0);
+			barColor = GetColor(255, 255, 0);
+		}
+		else
+		{
+			int blink = (GetNowCount() / 300) % 2;
+			textColor = blink ? GetColor(255, 50, 50) : GetColor(255, 150, 150);
+			barColor = GetColor(255, 50, 50);
+		}
+
+		SetFontSize(28);
+		DrawFormatString(panelX + 10, panelY + 4, textColor, "Time: %d", remaining);
+		SetFontSize(16);
+
+		int barX = panelX + 10;
+		int barY = panelY + 36;
+		int barMaxW = 200;
+		int barH = 10;
+		DrawBox(barX, barY, barX + barMaxW, barY + barH, GetColor(60, 60, 60), TRUE);
+		int barW = (int)(barMaxW * ratio);
+		if (barW > 0)
+			DrawBox(barX, barY, barX + barW, barY + barH, barColor, TRUE);
+	}
 
 	AbilityDraw();
+
+	ChangeFont("ＭＳ ゴシック");
 }
