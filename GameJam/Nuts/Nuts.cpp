@@ -33,6 +33,8 @@ float Nuts_Scale[999];//Nut_MAX_Pieces
 int Fresh_Nuts_Count = 0; // 集めた新鮮な実の数
 bool Is_Fever = false;    // フィーバー中かどうかフラグ
 int Fever_Time_Count = 0; // フィーバーの時間を計る(フレーム)
+int Shine_image=0;//フィーバー木の実を強調
+float Shine_Angle = 0.0f; // エフェクトの回転角度
 
 // フィーバー前の状態を保存するためのバックアップ
 int Backup_Nuts_active[999];
@@ -43,6 +45,7 @@ int Backup_Nut_MAX_Pieces;
 // 縮小アニメーション用
 bool Nuts_IsVanishing[999];  // それぞれの実が縮小中かどうか
 bool Is_FeverEnding = false; // フィーバー終了演出中かどうか
+
 
 void NutsInit(void)
 {
@@ -57,6 +60,7 @@ void NutsInit(void)
 	Nuts_image[6] = LoadGraph("Images/Item/walnut.png");
 	Nuts_image[7] = LoadGraph("Images/Item/walnut_rot.png");
 	Nuts_image[8] = LoadGraph("Images/Item/128.png");//フィーバー用の木の実
+	Shine_image=LoadGraph("Images/Item/shine.png");//フィーバー用の木の実強調
 	/////////////////////初期化//////////////////////////////////////
 	sorting = 0;
 	Appear_Time = 0;//時間差で現れる
@@ -142,6 +146,12 @@ void NutsUpdate(void)
 {
 	int time = TimerGetRemainingTime();
 	
+	// ↓これを追加（0.05fの数値を変えると回転スピードが変わります）
+	Shine_Angle += 0.05f;
+	// 角度が大きくなりすぎないようにリセット（必須ではないですが安全のため）
+	if (Shine_Angle > 3.141592f * 2.0f) {
+		Shine_Angle -= 3.141592f * 2.0f;
+	}
 
 	//フィーバーのカウントダウンと終了処理
 	if (Is_Fever==TRUE)
@@ -233,7 +243,8 @@ void NutsUpdate(void)
 			// 消える　縮小
 			if (Nuts_IsVanishing[i] == TRUE)
 			{
-				Nuts_Scale[i] -= 0.05f; // 縮小スピード（調整可）
+				Nuts_Scale[i] -= 0.05f; // 縮小スピード
+
 				if (Nuts_Scale[i] <= 0.0f) {
 					Nuts_Scale[i] = 0.0f;
 					Nuts_active[i] = FALSE;      // 完全に消す
@@ -271,6 +282,12 @@ void NutsDraw(float camera_x, float camera_y)//スクリーン座標の取得
 		 if (Nuts_active[pos_Item_No] == TRUE)//表示されるなら
 		 {
 			 DrawRotaGraphF(draw_x, draw_y, Nuts_Scale[pos_Item_No], 0, Nuts_image[Image_rand[pos_Item_No]], TRUE);
+			 if (Image_rand[pos_Item_No] == 8)
+			 {
+				 // Shine_Angleを使って回転させながら描画
+				 DrawRotaGraphF(draw_x, draw_y, 1.2, Shine_Angle, Shine_image, TRUE);
+
+			 }
 		 }
 		 /////////////////////画像が重なるなら消す////////////////////////////////
 		 for (s=0; s < Nut_MAX_Pieces; s++)//今までの画像を０から全部位置判別する
@@ -299,12 +316,12 @@ void NutsDraw(float camera_x, float camera_y)//スクリーン座標の取得
 	}
 	/////////////////////////////////////////////////////////////////////////////
 
-	int gauge_x = 50;           // ゲージの左上X座標 (画面左端から50px)
-	int gauge_y = 50;           // ゲージの左上Y座標 (画面上端から50px)
-	int gauge_max_width = 300;  // ゲージの最大幅 (ピクセル)
-	int gauge_height = 20;      // ゲージの高さ
+	int gauge_x = 30;           // ゲージの左上X座標 (画面左端から30px)
+	int gauge_y = 150;          // ゲージの左上Y座標 (少し下げて配置)
+	int gauge_width = 20;       // ゲージの幅 (太さ)
+	int gauge_max_height = 300; // ゲージの最大高さ (ピクセル)
 
-	float ratio = 0.0f;         // ゲージの割合 (0.0 -1.0)
+	float ratio = 0.0f;         // ゲージの割合 (0.0 - 1.0)
 	unsigned int gauge_color;   // ゲージの色
 
 	if (Is_Fever == false)
@@ -320,33 +337,34 @@ void NutsDraw(float camera_x, float camera_y)//スクリーン座標の取得
 		gauge_color = GetColor(255, 150, 0); // フィーバー中はオレンジ色
 	}
 
-	// 割合が0-1の範囲に収まるように
+	// 割合が0 -1の範囲に収まるように
 	if (ratio < 0.0f) ratio = 0.0f;
 	if (ratio > 1.0f) ratio = 1.0f;
 
-	// 現在のゲージの幅を計算
-	int current_width = (int)(gauge_max_width * ratio);
+	// 現在のゲージの高さを計算
+	int current_height = (int)(gauge_max_height * ratio);
+
+	// ゲージの「一番下」のY座標をあらかじめ計算しておく
+	int gauge_bottom_y = gauge_y + gauge_max_height;
 
 	// 1. ゲージの背景（空っぽの部分・暗いグレー）を描画
-	DrawBox(gauge_x, gauge_y, gauge_x + gauge_max_width, gauge_y + gauge_height, GetColor(50, 50, 50), TRUE);
+	DrawBox(gauge_x, gauge_y, gauge_x + gauge_width, gauge_bottom_y, GetColor(50, 50, 50), TRUE);
 
-	// 2. ゲージの中身を描画
-	if (current_width > 0) 
-	{
-		DrawBox(gauge_x, gauge_y, gauge_x + current_width, gauge_y + gauge_height, gauge_color, TRUE);
+	// 2. ゲージの中身を描画（下から上に向かって描画する）
+	if (current_height > 0) {
+		// Y座標の開始位置を「底辺 - 現在の高さ」にする
+		DrawBox(gauge_x, gauge_bottom_y - current_height, gauge_x + gauge_width, gauge_bottom_y, gauge_color, TRUE);
 	}
 
 	// 3. ゲージの枠線（白）を描画
-	DrawBox(gauge_x, gauge_y, gauge_x + gauge_max_width, gauge_y + gauge_height, GetColor(255, 255, 255), FALSE);
+	DrawBox(gauge_x, gauge_y, gauge_x + gauge_width, gauge_bottom_y, GetColor(255, 255, 255), FALSE);
 
-	// 4. 文字情報
-	if (Is_Fever==TRUE)
-	{
-		DrawString(gauge_x, gauge_y - 20, "FEVER TIME!!", GetColor(255, 255, 0));
+	// 4. 文字情報（ゲージの上に配置）
+	if (Is_Fever) {
+		DrawString(gauge_x - 15, gauge_y - 20, "FEVER!", GetColor(255, 255, 0));
 	}
-	else 
-	{
-		DrawFormatString(gauge_x, gauge_y - 20, GetColor(255, 255, 255), "Fever Gauge: %d / 20", Fresh_Nuts_Count);
+	else {
+		DrawFormatString(gauge_x - 5, gauge_y - 20, GetColor(255, 255, 255), "%d/5", Fresh_Nuts_Count);
 	}
 
 	/////////////////////////////////デバック用//////////////////////////////////////////////////////////////////////////////////
