@@ -35,19 +35,19 @@ void ResultInit(void)
 	rissu = LoadGraph("images/result/risutati.png");
 
 	//•]‰¿•t‚¯
-	if (now.score > 1499)
+	if (now.score > 2999)
 	{
 		flag = 1;
 	}
-	else if (now.score > 999 && now.score < 1500)
+	else if (now.score > 1999 && now.score < 3000)
 	{
 		flag = 2;
 	}
-	else if (now.score > 499 && now.score < 1000)
+	else if (now.score > 999 && now.score < 2000)
 	{
 		flag = 3;
 	}
-	else if (now.score > 0 && now.score < 500)
+	else if (now.score > 0 && now.score < 1000)
 	{
 		flag = 4;
 	}
@@ -111,23 +111,18 @@ void ResultDraw(void)
 	{
 	case 0:
 		DrawGraph(-200, 0, donguri, TRUE);
-		DrawString(400, 500, "‚»‚¤‚¢‚¤“ú‚à‚ ‚é", Cr3);
 		break;
 	case 1:
 		DrawGraph(-200, 0, donguri, TRUE);
-		DrawString(400, 500, "‚È‚©‚È‚©‚â‚é‚â‚ñ", Cr3);
 		break;
 	case 2:
 		DrawGraph(-200, 0, donguri, TRUE);
-		DrawString(400, 500, "‚Ó‚Â‚¤", Cr3);
 		break;
 	case 3:
 		DrawGraph(-200, 0, donguri, TRUE);
-		DrawString(400, 500, "‚»‚±‚»‚±", Cr3);
 		break;
 	case 4:
 		DrawGraph(-200, 0, donguri, TRUE);
-		DrawString(400, 500, "‚à‚¤‚¿‚å‚¢‚ª‚ñ‚Î‚ë‚Á‚©", Cr3);
 		break;
 	}
 
