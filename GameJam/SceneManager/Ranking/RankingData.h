@@ -11,7 +11,7 @@ struct RankData
 };
 
 int LoadRankData(void); //ランキングデータの読み込み
-const RankData* GetRankData(int index); //ランキングデータの取得
+RankData* GetRankData(int index); //ランキングデータの取得
 void AddData(RankData new_data); //ランキングデータの追加
 void SortRankData(void); //なんか順番変えるやつ
 void SaveRankData(void); //ランキングのデータの保存とかもろもろやってる

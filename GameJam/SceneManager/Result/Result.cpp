@@ -14,6 +14,7 @@ int resultSE3;
 int kakuninn = 1;
 int	donguri;
 int rissu;
+int nownum[10];
 
 void ResultInit(void)
 {
@@ -33,6 +34,7 @@ void ResultInit(void)
 	resultSE3 = LoadSoundMem("sounds/SE/result_max.mp3");
 
 	rissu = LoadGraph("images/result/risutati.png");
+	LoadDivGraph("images/UI/NUMBER.png", 10, 5, 2, 160, 160, nownum);
 
 	//評価付け
 	if (now.score > 2999)
@@ -90,8 +92,8 @@ eSceneType ResultUpdate(void)
 		StopSoundMem(resultSE3);
 		return eRanking;
 	}
-
-	if (GetControllerState(eButtonA) == eRelease)
+	//Bボタンでタイトルへ
+	if (GetControllerState(eButtonB) == eRelease)
 	{
 		rankflag = 1;
 		AddData(now);
@@ -139,8 +141,20 @@ void ResultDraw(void)
 
 	DrawGraph(800, 600, rissu, TRUE);
 
-	DrawString(850, 200, "スコア", Cr3);
-	DrawFormatString(820, 250, Cr3, "%4d", now.score);
+	int digit_1[4] = { now.score / 1000 % 10,
+					   now.score / 100 % 10,
+					   now.score / 10 % 10,
+					   now.score % 10 };
+
+
+	for (int j = 0; j < 4; j++)
+	{
+		DrawRotaGraph(750 + j * 45, 100, 0.4, 0.0, nownum[digit_1[j]], TRUE);
+	}
+
+
+	DrawString(750, 50, "スコア", Cr3);
+	//DrawFormatString(820, 250, Cr3, "%4d", now.score);
 
 	
 }

@@ -25,7 +25,7 @@ int LoadRankData(void)
 	return TRUE;
 }
 
-const RankData* GetRankData(int index)
+RankData* GetRankData(int index)
 {
 	//”ÍˆÍ“à‚È‚çŠY“–ƒf[ƒ^‚ğ•Ô‚·
 	if (0 <= index && index < D_RANK_DATA_MAX)
