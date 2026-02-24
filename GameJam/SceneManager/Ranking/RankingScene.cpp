@@ -62,12 +62,12 @@ void RankingDraw(void)
 			const RankData* deta = GetRankData(i);
 			if (now_score == deta->score)
 			{
-				DrawFormatString(200, 100 + i * 60, GetColor(255, 255, 0), "%2d %10d",
+				DrawFormatString(200, 200 + i * 70, GetColor(255, 255, 0), "%2d %10d",
 					deta->num, deta->score);
 			}
 			else
 			{
-				DrawFormatString(200, 100 + i * 60, GetColor(255, 255, 255), "%2d %10d",
+				DrawFormatString(200, 200 + i * 70, GetColor(0, 0, 0), "%2d %10d",
 					deta->num, deta->score);
 			}
 		}
@@ -79,16 +79,16 @@ void RankingDraw(void)
 			const RankData* deta = GetRankData(i);
 			if (now_score == deta->score)
 			{
-				DrawFormatString(500, 100 + i * 60, GetColor(255, 255, 0), "%2d %10d",
+				DrawFormatString(500, 200 + i * 70, GetColor(255, 255, 0), "%2d %10d",
 					deta->num, deta->score);
 			}
 			else
 			{
-				DrawFormatString(500, 100 + i * 60, GetColor(255, 255, 255), "%2d %10d",
+				DrawFormatString(500, 200 + i * 70, GetColor(0, 0, 0), "%2d %10d",
 					deta->num, deta->score);
 			}
 		}
-		DrawFormatString(0, 300, GetColor(255, 255, 255), "%10d", now_score);
+		DrawFormatString(0, 300, GetColor(0, 0, 0), "%10d", now_score);
 		DrawString(350, 600, "Aボタンでタイトルへ戻る", GetColor(255, 255, 255));
 		
 		break;
