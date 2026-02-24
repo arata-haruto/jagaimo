@@ -66,6 +66,7 @@ eSceneType TitleUpdate()
 	//スペース押されたらインゲーム画面へ
 	if (GetKeyInputState(KEY_INPUT_SPACE) == eRelease)
 	{
+		PlaySoundMem(PushSE, DX_PLAYTYPE_BACK);
 		StopSoundMem(TitleBGM);
 		return eInGame;
 	}
