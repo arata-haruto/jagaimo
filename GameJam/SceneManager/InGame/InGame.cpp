@@ -9,10 +9,10 @@
 #include "DxLib.h"
 
 static int prevTime = 0;
-static int snd_bgm;
-static int snd_itemget;
-static int snd_itemrot;
-static int snd_time;
+static int ingame_bgm;
+static int item_se;
+static int itemrot_se;
+static int time_se;
 static int time_warned;
 
 int Cr2 = GetColor(255, 255, 255);
@@ -26,12 +26,12 @@ void InGameInit(void)
 	TimerInit(30.0f);
 	prevTime = GetNowCount(); // deltaTime
 
-	snd_bgm     = LoadSoundMem("sounds/BGM/InGame_bgm.mp3");
-	snd_itemget  = LoadSoundMem("sounds/SE/itemget.wav");
-	snd_itemrot  = LoadSoundMem("sounds/SE/itemrot.wav");
-	snd_time     = LoadSoundMem("sounds/SE/time.wav");
+	ingame_bgm     = LoadSoundMem("sounds/BGM/InGame_bgm.mp3");
+	item_se  = LoadSoundMem("sounds/SE/itemget.wav");
+	itemrot_se  = LoadSoundMem("sounds/SE/itemrot.wav");
+	time_se     = LoadSoundMem("sounds/SE/time.wav");
 	time_warned  = FALSE;
-	PlaySoundMem(snd_bgm, DX_PLAYTYPE_LOOP);
+	PlaySoundMem(ingame_bgm, DX_PLAYTYPE_LOOP);
 }
 
 eSceneType InGameUpdate(void)
@@ -59,22 +59,22 @@ eSceneType InGameUpdate(void)
 	{
 		ScoreAdd(score * GetAbilityScoreMul());
 		if (score > 0)
-			PlaySoundMem(snd_itemget, DX_PLAYTYPE_BACK);
+			PlaySoundMem(item_se, DX_PLAYTYPE_BACK);
 		else
-			PlaySoundMem(snd_itemrot, DX_PLAYTYPE_BACK);
+			PlaySoundMem(itemrot_se, DX_PLAYTYPE_BACK);
 	}
 
 	TimerUpdate(deltaTime);
 
 	if (time_warned == FALSE && TimerGetRemainingTime() <= 5)
 	{
-		PlaySoundMem(snd_time, DX_PLAYTYPE_BACK);
+		PlaySoundMem(time_se, DX_PLAYTYPE_BACK);
 		time_warned = TRUE;
 	}
 
 	if (TimerIsTimeUp())
 	{
-		StopSoundMem(snd_bgm);
+		StopSoundMem(ingame_bgm);
 		return eResult;
 	}
 

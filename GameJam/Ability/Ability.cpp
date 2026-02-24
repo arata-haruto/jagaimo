@@ -17,34 +17,56 @@ static float magnetTimer;
 static float dashTimer;
 static float boostTimer;
 
-static XINPUT_STATE pad_now;
-static XINPUT_STATE pad_old;
-
-static int PadPressed(int button)
+class AbilityInputBridge
 {
-	return (pad_old.Buttons[button] == 0 && pad_now.Buttons[button] != 0);
-}
+public:
+	void Update(void)
+	{
+		old_pad = now_pad;
+		GetJoypadXInputState(DX_INPUT_PAD1, &now_pad);
+	}
+
+	eInputState GetButtonState(int button) const
+	{
+		int now_pressed = (now_pad.Buttons[button] == TRUE);
+		int old_pressed = (old_pad.Buttons[button] == TRUE);
+
+		if (old_pressed == FALSE && now_pressed == TRUE)
+			return ePress;
+		if (old_pressed == TRUE && now_pressed == TRUE)
+			return eHold;
+		if (old_pressed == TRUE && now_pressed == FALSE)
+			return eRelease;
+		return eNone;
+	}
+
+private:
+	XINPUT_STATE now_pad = {};
+	XINPUT_STATE old_pad = {};
+};
+
+static AbilityInputBridge g_abil_input;
 
 void AbilityInit(void)
 {
 	magnetTimer = 0.0f;
 	dashTimer   = 0.0f;
 	boostTimer  = 0.0f;
-	pad_now = {};
-	pad_old = {};
+	g_abil_input = AbilityInputBridge();
 }
 
 void AbilityUpdate(float deltaTime)
 {
-	pad_old = pad_now;
-	GetJoypadXInputState(DX_INPUT_PAD1, &pad_now);
+	AbilityInputBridge* input = &g_abil_input;
+	input->Update();
 
 	int score = ScoreGetTotal();
 
 	// Magnet: Z key or X button
 	if (magnetTimer <= 0.0f)
 	{
-		if ((GetKeyInputState(KEY_INPUT_Z) == ePress) || PadPressed(XINPUT_BUTTON_X))
+		if ((GetKeyInputState(KEY_INPUT_Z) == ePress) ||
+			input->GetButtonState(XINPUT_BUTTON_X) == ePress)
 		{
 			if (score >= MAGNET_COST)
 			{
@@ -57,7 +79,8 @@ void AbilityUpdate(float deltaTime)
 	// Dash: X key or Y button
 	if (dashTimer <= 0.0f)
 	{
-		if ((GetKeyInputState(KEY_INPUT_X) == ePress) || PadPressed(XINPUT_BUTTON_Y))
+		if ((GetKeyInputState(KEY_INPUT_X) == ePress) ||
+			input->GetButtonState(XINPUT_BUTTON_Y) == ePress)
 		{
 			if (score >= DASH_COST)
 			{
@@ -70,7 +93,8 @@ void AbilityUpdate(float deltaTime)
 	// Boost: C key or B button
 	if (boostTimer <= 0.0f)
 	{
-		if ((GetKeyInputState(KEY_INPUT_C) == ePress) || PadPressed(XINPUT_BUTTON_B))
+		if ((GetKeyInputState(KEY_INPUT_C) == ePress) ||
+			input->GetButtonState(XINPUT_BUTTON_B) == ePress)
 		{
 			if (score >= BOOST_COST)
 			{
