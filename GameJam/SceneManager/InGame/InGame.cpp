@@ -5,6 +5,7 @@
 #include "../../Player/Player.h"
 #include "../../Camera/Camera.h"
 #include "../../Nuts/Nuts.h"
+#include "../../Ability/Ability.h"
 #include "DxLib.h"
 
 static int prevTime = 0;
@@ -16,7 +17,8 @@ void InGameInit(void)
 	CameraInit();
 	ScoreReset();
 	NutsInit();
-	TimerInit(30.0f);        //制限時間
+	AbilityInit();
+	TimerInit(30.0f);        
 	prevTime = GetNowCount(); // deltaTime
 }
 
@@ -27,16 +29,23 @@ eSceneType InGameUpdate(void)
 	float deltaTime = (nowTime - prevTime) / 1000.0f;
 	prevTime = nowTime;
 
+	AbilityUpdate(deltaTime);
+	PlayerSetSpeedMultiplier(GetAbilityDashSpeedMul());
+
 	PlayerUpdate();
 	NutsUpdate();
 	Position2D pos = GetPlayerPosition();
 	CameraUpdate(pos.x, pos.y);
 
-	//触れたらスコア加算
+	if (IsAbilityMagnetActive())
+	{
+		NutsMagnetPull(pos.x, pos.y, 200.0f, 5.0f);
+	}
+
 	int score = NutsCheckCollect(pos.x, pos.y, 16.0f);
 	if (score != 0)
 	{
-		ScoreAdd(score); // 種類別スコア加算（腐りはマイナス）
+		ScoreAdd(score * GetAbilityScoreMul()); 
 	}
 
 
@@ -64,4 +73,5 @@ void InGameDraw(void)
 	sprintf_s(scoreBuf, "Score: %d", ScoreGetTotal());
 	DrawString(10, 80, scoreBuf, Cr2);
 
+	AbilityDraw();
 }
