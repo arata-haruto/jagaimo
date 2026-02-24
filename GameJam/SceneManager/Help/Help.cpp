@@ -14,7 +14,7 @@ int Help_back;
 eSceneType HelpUpdate(void)
 {
 	CancelSE = LoadSoundMem("sounds/SE/cancel.wav");
-	Help_back = LoadGraph("images/background/bg_natural_mori.jpg");
+	Help_back = LoadGraph("images/background/Nature-others-7.png");
 	//Aボタンが押されたらタイトルへ
 	if (GetControllerState(eButtonA) == ePress)
 	{
@@ -37,8 +37,9 @@ void HelpDraw(void)
 	DrawString(200, 230, "Lスティックでリスを動かします", C);
 	DrawString(200, 260, "木の実やキノコに触れると得点がもらえます", C);
 	DrawString(200, 290, "傷んでいる木の実やキノコに触れると得点が下がってしまいます", C);
-	DrawString(200, 320, "稼いだスコアは最後にどんぐりに変換されます", C);
-	DrawString(200, 400, "たくさんスコアを稼いで山盛りのどんぐりを目指そう!", C);
-	DrawString(200, 470, "Aボタンでタイトルに戻ります", C);
+	DrawString(200, 320, "たくさん木の実を集めたり、特殊な木の実を取るとフィーバータイムになります", C);
+	DrawString(200, 400, "稼いだスコアは最後にどんぐりに変換されます", C);
+	DrawString(200, 420, "たくさんスコアを稼いで山盛りのどんぐりを目指そう!", C);
+	DrawString(200, 490, "Aボタンでタイトルに戻ります", C);
 }
 
