@@ -77,25 +77,25 @@ eSceneType InGameUpdate(void)
 
 	bool current_fever_state = GetIsFever(); // 現在のフィーバー状態を取得
 
-	// ① フィーバーに突入した瞬間（前回 false -> 今回 true）
+	// フィーバーに突入
 	if (prev_fever_state == false && current_fever_state == true)
 	{
 		StopSoundMem(ingame_bgm); // 通常BGMを止める
 
-		// 音源の半ばから流す（例：15000なら15秒の位置からスタート）
+		// 音源の途中から流したい
 		SetSoundCurrentTime(15000, FEVER_BGM);
 
-		// BGMなのでループ再生(DX_PLAYTYPE_LOOP)にするのがおすすめです
+		// フィーバーBGM
 		PlaySoundMem(FEVER_BGM, DX_PLAYTYPE_LOOP,FALSE);
 	}
-	// ② フィーバーが終了した瞬間（前回 true -> 今回 false）を追加！
+	// フィーバーが終了
 	else if (prev_fever_state == true && current_fever_state == false)
 	{
 		StopSoundMem(FEVER_BGM); // フィーバーBGMを止める
-		PlaySoundMem(ingame_bgm, DX_PLAYTYPE_LOOP); // 通常のBGMを再度流す
+		PlaySoundMem(ingame_bgm, DX_PLAYTYPE_LOOP); // もとのBGMを再度流す
 	}
 
-	// 状態を更新（次のフレームの「前回」になる）
+	// 状態を更新
 	prev_fever_state = current_fever_state;
 
 	TimerUpdate(deltaTime);
