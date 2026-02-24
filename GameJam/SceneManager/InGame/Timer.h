@@ -5,3 +5,4 @@ void TimerInit(float limitSeconds);
 void TimerUpdate(float deltaTime);
 int  TimerGetRemainingTime(void);  // 残り秒数（整数）
 int  TimerIsTimeUp(void);          // 1: 時間切れ, 0: まだ
+void TimerAddTime(float add_time);//タイマー増減
