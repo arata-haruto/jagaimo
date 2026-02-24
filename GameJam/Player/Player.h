@@ -3,7 +3,6 @@
 
 void PlayerInit(void);
 void PlayerUpdate(void);
-void MapDraw(float camera_x, float camera_y);
 void PlayerDraw(float camera_x, float camera_y);
 
 Position2D GetPlayerPosition(void);

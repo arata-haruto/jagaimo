@@ -18,10 +18,8 @@ static int player_dir;
 static int img_right[2];    
 static int img_up[2];       
 static int img_down[2];     
-static int img_upper_left[2]; 
+static int img_upper_left[2];
 static int img_lower_left[2];
-static int img_floor;
-static int img_floor2;
 
 #define D_STICK_DEADZONE (0.2f)
 #define D_STICK_MAX (32767.0f)
@@ -96,8 +94,6 @@ void PlayerInit(void)
 	img_upper_left[1] = LoadGraph("Images/Player/ç∂è„2.png");
 	img_lower_left[0] = LoadGraph("Images/Player/ç∂â∫1.png");
 	img_lower_left[1] = LoadGraph("Images/Player/ç∂â∫2.png");
-	img_floor = LoadGraph("Images/map/floor.png");
-	img_floor2 = LoadGraph("Images/map/floor_02.png");
 }
 
 void PlayerUpdate(void)
@@ -209,28 +205,6 @@ void PlayerUpdate(void)
 	}
 }
 
-void MapDraw(float camera_x, float camera_y)
-{
-	int tile_w = 64;
-	int tile_h = 64;
-	int start_tx = (int)(camera_x / tile_w);
-	int start_ty = (int)(camera_y / tile_h);
-	int end_tx = (int)((camera_x + D_WINDOW_SIZE_X) / tile_w);
-	int end_ty = (int)((camera_y + D_WINDOW_SIZE_Y) / tile_h);
-
-	for (int ty = start_ty; ty <= end_ty; ty++)
-	{
-		for (int tx = start_tx; tx <= end_tx; tx++)
-		{
-			int draw_x = (int)(tx * tile_w - camera_x);
-			int draw_y = (int)(ty * tile_h - camera_y);
-			unsigned int hash = (unsigned int)(tx * 7919 + ty * 104729);
-			int use_flower = ((hash % 10) < 3) ? TRUE : FALSE;
-			DrawGraph(draw_x, draw_y, use_flower ? img_floor2 : img_floor, FALSE);
-		}
-	}
-}
-
 void PlayerDraw(float camera_x, float camera_y)
 {
 	int px = (int)(player_pos.x - camera_x);
@@ -296,7 +270,7 @@ Position2D GetPlayerPosition(void)
 
 float GetPlayerRadius(void)
 {
-	return D_PLAYER_WIDTH / 2.0f * 0.8f;
+	return 28.0f;
 }
 
 void PlayerSetSpeedMultiplier(float mul)
