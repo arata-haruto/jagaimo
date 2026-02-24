@@ -5,9 +5,15 @@
 #include "../../Player/Player.h"
 #include "../../Camera/Camera.h"
 #include "../../Nuts/Nuts.h"
+#include "../../Ability/Ability.h"
 #include "DxLib.h"
 
 static int prevTime = 0;
+static int snd_bgm;
+static int snd_itemget;
+static int snd_itemrot;
+static int snd_time;
+static int time_warned;
 
 int Cr2 = GetColor(255, 255, 255);
 void InGameInit(void)
@@ -16,8 +22,16 @@ void InGameInit(void)
 	CameraInit();
 	ScoreReset();
 	NutsInit();
-	TimerInit(30.0f);        //制限時間
+	AbilityInit();
+	TimerInit(30.0f);
 	prevTime = GetNowCount(); // deltaTime
+
+	snd_bgm     = LoadSoundMem("sounds/BGM/InGame_bgm.mp3");
+	snd_itemget  = LoadSoundMem("sounds/SE/itemget.wav");
+	snd_itemrot  = LoadSoundMem("sounds/SE/itemrot.wav");
+	snd_time     = LoadSoundMem("sounds/SE/time.wav");
+	time_warned  = FALSE;
+	PlaySoundMem(snd_bgm, DX_PLAYTYPE_LOOP);
 }
 
 eSceneType InGameUpdate(void)
@@ -27,23 +41,40 @@ eSceneType InGameUpdate(void)
 	float deltaTime = (nowTime - prevTime) / 1000.0f;
 	prevTime = nowTime;
 
+	AbilityUpdate(deltaTime);
+	PlayerSetSpeedMultiplier(GetAbilityDashSpeedMul());
+
 	PlayerUpdate();
 	NutsUpdate();
 	Position2D pos = GetPlayerPosition();
 	CameraUpdate(pos.x, pos.y);
 
-	//触れたらスコア加算
+	if (IsAbilityMagnetActive())
+	{
+		NutsMagnetPull(pos.x, pos.y, 200.0f, 5.0f);
+	}
+
 	int score = NutsCheckCollect(pos.x, pos.y, 16.0f);
 	if (score != 0)
 	{
-		ScoreAdd(score); // 種類別スコア加算（腐りはマイナス）
+		ScoreAdd(score * GetAbilityScoreMul());
+		if (score > 0)
+			PlaySoundMem(snd_itemget, DX_PLAYTYPE_BACK);
+		else
+			PlaySoundMem(snd_itemrot, DX_PLAYTYPE_BACK);
 	}
 
-
-	
 	TimerUpdate(deltaTime);
+
+	if (time_warned == FALSE && TimerGetRemainingTime() <= 5)
+	{
+		PlaySoundMem(snd_time, DX_PLAYTYPE_BACK);
+		time_warned = TRUE;
+	}
+
 	if (TimerIsTimeUp())
 	{
+		StopSoundMem(snd_bgm);
 		return eResult;
 	}
 
@@ -64,4 +95,5 @@ void InGameDraw(void)
 	sprintf_s(scoreBuf, "Score: %d", ScoreGetTotal());
 	DrawString(10, 80, scoreBuf, Cr2);
 
+	AbilityDraw();
 }
