@@ -180,8 +180,8 @@ void PlayerUpdate(void)
 		else if (dy > 0.4f)                  player_dir = 6; 
 	}
 
-	player_pos.x += dx * D_PLAYER_SPEED;
-	player_pos.y += dy * D_PLAYER_SPEED;
+	player_pos.x += dx * D_PLAYER_SPEED * speed_mul;
+	player_pos.y += dy * D_PLAYER_SPEED * speed_mul;
 
 	if (player_pos.x < half_w)
 	{
