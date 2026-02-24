@@ -5,9 +5,14 @@
 #include<DxLib.h>
 
 int Rankingflag;
+int RankingBGM;
+int guri;
 
 int RankingInit(void)
 {
+	RankingBGM = LoadSoundMem("sounds/BGM/Ranking_BGM.mp3");
+	guri = LoadGraph("images/result/moridon.png");
+
 	//ランキングデータ読み込み
 	if (LoadRankData() != TRUE)
 	{
@@ -21,10 +26,19 @@ int RankingInit(void)
 
 eSceneType RankingUpdate(void)
 {
-
+	if (CheckSoundMem(RankingBGM) != TRUE)
+	{
+		PlaySoundMem(RankingBGM, DX_PLAYTYPE_BACK);
+	}
 	//Aボタンでタイトルへ戻る
 	if (GetControllerState(eButtonA) == ePress)
 	{
+		StopSoundMem(RankingBGM);
+		return eTitle;
+	}
+	if (GetKeyInputState(KEY_INPUT_B) == ePress)
+	{
+		StopSoundMem(RankingBGM);
 		return eTitle;
 	}
 	return eRanking;
@@ -36,9 +50,10 @@ void RankingDraw(void)
 	SaveRankData();
 	//タイトルランキング一覧を描画
 	SetFontSize(50);
-	DrawString(0, 10, "ランキング画面", GetColor(255, 255, 255));
 	int now_score = GetScore();
 	
+	DrawGraph(-200, 0, guri, TRUE);
+
 	switch (Rankingflag)
 	{
 	case 0:
@@ -78,6 +93,8 @@ void RankingDraw(void)
 		
 		break;
 	}
+
+	
 
 	SetFontSize(20);
 }
